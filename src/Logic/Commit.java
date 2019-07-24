@@ -1,13 +1,16 @@
 package Logic;
 import java.util.*;
 
+import static Logic.ConstantsEnums.*;
+
+
 
 public class Commit {
 
-        private Long m_MainSHA1;
-        private List<Long> m_PreviousSHA1;
-        private String m_Message;
+        private String m_MainSHA1 = EmptyString;
+        private List<String> m_PreviousSHA1 = null;
+        private String m_Message = EmptyString;
         private Date m_CreatedTime;
-        private String m_CreatedBy;
+        private String m_CreatedBy = EmptyString;
 
 }

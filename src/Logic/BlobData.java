@@ -2,13 +2,17 @@ package Logic;
 import java.util.*;
 import  java.lang.*;
 
+import static Logic.ConstantsEnums.*;
+import Logic.ConstantsEnums.*;
+
 public class BlobData {
 
-    private String m_Name;
-    private Long m_Sha1;
-    private ConstantsEnums.FileType m_Type;
-    private String m_ChangedBy;
+    private String m_Name = EmptyString;
+    private String m_Sha1 = EmptyString;
+    private FileType m_Type = FileType.NONE;
+    private String m_ChangedBy = EmptyString;
     private Date  m_Date;
+    private Boolean m_Changed = false;
 
     @Override
     public String toString()
