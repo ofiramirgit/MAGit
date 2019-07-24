@@ -2,7 +2,7 @@ package UI;
 
 public class Menu {
 
-    public static void printMenu()
+    public void printMenu()
     {
         System.out.print(
                         "-1. Change username\n"+
@@ -17,8 +17,16 @@ public class Menu {
                         "8.  Export repository to XML\n"+
                         "9.  Switch repository\n"+
                         "10. Merge with branch\n"+
-                        "11. Exit\n"
+                        "11. Exit\n"+
+                                "12.Bonus1\n"
         );
+    }
+
+    public void printInfoMenu(String i_CurrentUser, String i_RepositoryLocation)
+    {
+        System.out.println("Magit Menu      " +
+                "Current User: " + i_CurrentUser +
+                "       Current repository location " + i_RepositoryLocation);
     }
 
 }

@@ -1,19 +1,24 @@
 package UI;
 import Logic.LogicManager;
+
+import java.nio.file.Path;
 import java.util.Scanner;
 
 public class Engine
 {
-    private Boolean m_IsRunning = true;
     private Scanner m_Scanner = new Scanner(System.in);
-    private LogicManager LM = new LogicManager();
+    private Boolean m_IsRunning = true;
+    private LogicManager m_LogicManager = new LogicManager();
+    private InputManager m_InputManager = new InputManager();
+    private Menu m_Menu = new Menu();
 
 
     public void run()
     {
         while(m_IsRunning)
         {
-            Menu.printMenu();
+            m_Menu.printInfoMenu(m_LogicManager.getActiveUser(),m_LogicManager.getRepositoryLocation());
+            m_Menu.printMenu();
             execute(m_Scanner.nextInt());
         }
     }
@@ -22,6 +27,7 @@ public class Engine
     {
         switch(i_Option){
             case -1: //Change username
+                m_LogicManager.setActiveUser(m_InputManager.IOsetActiveUser());
                 break;
             case 0: //Load from XML
                 break;
@@ -48,6 +54,8 @@ public class Engine
             case 11: //Exit
                 m_IsRunning = false;
                 break;
+            case 12: //Bonus 1
+                m_LogicManager.initRepository(m_InputManager.IOinitRepository());
 
         }
     }
