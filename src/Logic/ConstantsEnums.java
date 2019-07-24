@@ -7,5 +7,6 @@ public class ConstantsEnums {
          FOLDER
     }
 
+    public static final String EmptyString = "";
 
 }
