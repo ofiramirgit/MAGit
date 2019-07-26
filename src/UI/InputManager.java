@@ -9,15 +9,16 @@ public class InputManager {
 
     public String IOsetActiveUser()
     {
-        System.out.println("insert new Active UserName:\n");
-        return(m_Scanner.nextLine());
+        System.out.println("insert new Active UserName:");
+        String user_name = m_Scanner.nextLine();
+        return(user_name);
     }
 
     public Path IOinitRepository()
     {
-        System.out.println("insert Repository Name:\n");
+        System.out.println("insert Repository Name:");
         String RepositoryName = m_Scanner.nextLine();
-        System.out.println("insert Repository Location:\n");
+        System.out.println("insert Repository Location:");
         Path RepositoryPath = Paths.get(m_Scanner.nextLine() + "\\" + RepositoryName+ "\\.magit" );
         return RepositoryPath;
     }

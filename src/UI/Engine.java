@@ -2,6 +2,7 @@ package UI;
 import Logic.LogicManager;
 
 import java.nio.file.Path;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Engine
@@ -56,7 +57,7 @@ public class Engine
                 break;
             case 12: //Bonus 1
                 m_LogicManager.initRepository(m_InputManager.IOinitRepository());
-
+                break;
         }
     }
 }

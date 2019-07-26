@@ -16,27 +16,19 @@ public class LogicManager {
 
     public void setActiveUser(String i_ActiveUser) { m_ActiveUser = i_ActiveUser; }
 
-    public String getRepositoryLocation() { return "C:/repo"; }
+    public String getRepositoryLocation() { return "C:/repo"; } //default directory(for testing)
 
-    public void initRepository(Path i_RepositoryPath)
-    {
+    public void initRepository(Path i_RepositoryPath) {
         Boolean dirExists = Files.exists(i_RepositoryPath);
-        if(dirExists)
-        {
-                   // error
+        if (dirExists) {
+            System.out.println("Directory Alerady Exists");
         } else {
             try {
-                // Creating The New Directory Structure
-                Files.createDirectories(i_RepositoryPath);
-                System.out.println("! New Directory Successfully Created !");
                 Files.createDirectories(i_RepositoryPath);
             } catch (IOException ioExceptionObj) {
                 System.out.println("Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
             }
+        }
+
     }
-
-
-}
-
-
 }
