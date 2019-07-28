@@ -5,13 +5,15 @@ import  java.lang.*;
 import static Logic.ConstantsEnums.*;
 import Logic.ConstantsEnums.*;
 
+import javax.xml.bind.annotation.*;
+
 public class BlobData {
-    private Integer m_Id = -1;
+    private String m_Id = EmptyString;
     private String m_Name = EmptyString;
     private String m_Sha1 = EmptyString;
     private FileType m_Type = FileType.NONE;
     private String m_ChangedBy = EmptyString;
-    private Date  m_Date;
+    private String m_Date;
     private Boolean m_Changed = false;
 
     @Override
