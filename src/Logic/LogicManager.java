@@ -8,6 +8,7 @@ import java.util.List;
 import static Logic.ConstantsEnums.*;
 
 
+
 public class LogicManager {
 
     private String m_ActiveUser = "Administrator";
@@ -31,4 +32,12 @@ public class LogicManager {
         }
 
     }
+
+    public void readXML()
+    {
+        XmlReader xmlReader = new XmlReader("abc");
+//        xmlReader.init();
+    }
+
+
 }

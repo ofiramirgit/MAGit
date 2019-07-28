@@ -6,7 +6,7 @@ import static Logic.ConstantsEnums.*;
 import Logic.ConstantsEnums.*;
 
 public class BlobData {
-
+    private Integer m_Id = -1;
     private String m_Name = EmptyString;
     private String m_Sha1 = EmptyString;
     private FileType m_Type = FileType.NONE;
