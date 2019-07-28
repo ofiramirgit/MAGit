@@ -23,5 +23,16 @@ public class InputManager {
         return RepositoryPath;
     }
 
+    public String getInputActiveRepository()
+    {
+        System.out.println("insert Repository Full Path:");
+        return m_Scanner.nextLine();
+    }
+
+    public void printActiveRepositoryNotFound()
+    {
+        System.out.println("Error! Repository Not Found.");
+    }
+
 
 }

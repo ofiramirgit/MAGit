@@ -18,7 +18,7 @@ public class Engine
     {
         while(m_IsRunning)
         {
-            m_Menu.printInfoMenu(m_LogicManager.getActiveUser(),m_LogicManager.getRepositoryLocation());
+            m_Menu.printInfoMenu(m_LogicManager.getActiveUser(),m_LogicManager.getActiveRepository());
             m_Menu.printMenu();
             execute(m_Scanner.nextInt());
         }
@@ -50,6 +50,8 @@ public class Engine
             case 8: //Export repository to XML
                 break;
             case 9: //Switch repository
+                if(!m_LogicManager.setActiveRepository(m_InputManager.getInputActiveRepository()))
+                    m_InputManager.printActiveRepositoryNotFound();
                 break;
             case 10: //Merge with branch
                 break;
