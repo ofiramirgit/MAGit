@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import GeneratedXML.MagitRepository;
+import org.apache.commons.codec.digest.DigestUtils;
 
 
 public class XmlReader {
@@ -47,11 +48,13 @@ public class XmlReader {
             System.out.println(b.getLastUpdater());
             System.out.println(b.getLastUpdateDate());
             System.out.println(b.getContent());
+            System.out.println("SHA-1: " + DigestUtils.sha1Hex(b.getContent()));
         }
     }
     private void BuildRepository(MagitRepository i_MagitRepository) {
         for(MagitRepository.MagitFolders.MagitSingleFolder F : i_MagitRepository.getMagitFolders().getMagitSingleFolder())
         {
+
             System.out.println("-------Folder "+F.getId()+"--------");
             System.out.println("Id:               " + F.getId());
             System.out.println("Last Update Date: " + F.getLastUpdateDate());
@@ -60,12 +63,33 @@ public class XmlReader {
 //            MagitRepository.MagitFolders.MagitSingleFolder.Items blobs = F.getItems();
             for(MagitRepository.MagitFolders.MagitSingleFolder.Items.Item item : F.getItems().getItem()) {
                 System.out.println("    ---item "+item.getId()+"---------");
-                System.out.println("    Type:         " + item.getType());
+                System.out.println("    Type:                " + item.getType());
+                if(item.getType().equals("blob"))
+                {
+                    printBlob(i_MagitRepository.getMagitBlobs(),item.getId());
+                }
             }
             System.out.print("\n");
 
         }
 
+    }
+
+    private void printBlob(MagitRepository.MagitBlobs blobs,Byte id)
+    {
+        //MagitRepository.MagitBlobs.MagitBlob blob = blobs.getMagitBlob().get(id);
+        for(MagitRepository.MagitBlobs.MagitBlob blob : blobs.getMagitBlob())
+        {
+            if(blob.getId().equals(id))
+            {
+                System.out.println("    Blob Id:             " + blob.getId());
+                System.out.println("    Blob Name:           " + blob.getName());
+                System.out.println("    Blob Last Updater:   " + blob.getLastUpdater());
+                System.out.println("    Blob Date Update:    " + blob.getLastUpdateDate());
+                System.out.println("    Blob Content:        " + blob.getContent());
+                System.out.println("    SHA-1:               " + DigestUtils.sha1Hex(blob.getContent()));
+            }
+        }
     }
 
 }
