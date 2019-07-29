@@ -2,9 +2,10 @@ package Logic;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import GeneratedXML.MagitRepository;
@@ -14,20 +15,51 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class XmlReader {
     private static final String JAXB_XML_GAME_PACKAGE_NAME = "GeneratedXML";
 
-    InputStream inputStream;
-
-    private JAXBContext context;
+    private InputStream inputStream;
+    private MagitRepository magitRepository;
 
     public XmlReader(String i_XMLLocation){
         try {
-            inputStream = new FileInputStream("C:\\Users\\OL\\Desktop\\Java Course\\EX1\\ex1-small.xml");
-            MagitRepository magitRepository = deserializeFrom(inputStream);
-            //printRep(magitRepository);
-            BuildRepository(magitRepository);
-        }catch(JAXBException | FileNotFoundException e ) {
+            inputStream = new FileInputStream(i_XMLLocation);
+        }catch(FileNotFoundException e) {
             e.printStackTrace();
         }
     }
+
+    public void buildFromXML()
+    {
+        try {
+        magitRepository = deserializeFrom(inputStream);
+        }catch(JAXBException  e ) {
+            e.printStackTrace();
+        }
+
+        initRepository();
+
+       // buildFromMagitRepository();
+
+        // BuildRepository(magitRepository);
+    }
+
+
+    public void buildFromMagitRepository()
+    {
+        buildBlobs(magitRepository.getMagitBlobs());
+    }
+
+    private void buildBlobs(MagitRepository.MagitBlobs blobs)
+    {
+        File file;
+        String sha1;
+      //  for(MagitRepository.MagitBlobs.MagitBlob blob : blobs)
+      //  {
+            //zip
+      //       sha1 = DigestUtils.sha1Hex(blob.getContent());
+     //        file = new File(sha1);
+
+     //   }
+    }
+
 
     private MagitRepository deserializeFrom(InputStream in) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
@@ -90,6 +122,23 @@ public class XmlReader {
                 System.out.println("    SHA-1:               " + DigestUtils.sha1Hex(blob.getContent()));
             }
         }
+    }
+
+    private void initRepository() {
+
+        Path location = Paths.get( magitRepository.getLocation() + "\\" + magitRepository.getName() + "\\.magit");
+
+        Boolean dirExists = Files.exists(location);
+        if (dirExists) {
+            System.out.println("Directory Alerady Exists");
+        } else {
+            try {
+                Files.createDirectories(location);
+            } catch (IOException ioExceptionObj) {
+                System.out.println("Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
+            }
+        }
+
     }
 
 }
