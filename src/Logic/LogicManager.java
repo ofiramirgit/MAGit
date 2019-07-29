@@ -1,5 +1,6 @@
 package Logic;
 
+import GeneratedXML.MagitRepository;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.IOException;
@@ -51,6 +52,4 @@ public class LogicManager {
         XmlReader xmlReader = new XmlReader("abc");
 //        xmlReader.init();
     }
-
-
 }
