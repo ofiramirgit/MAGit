@@ -3,10 +3,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 import GeneratedXML.MagitRepository;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -15,7 +17,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 public class XmlReader {
     private static final String JAXB_XML_GAME_PACKAGE_NAME = "GeneratedXML";
 
-    private InputStream inputStream;
+    private InputStream inputStream = null;
     private MagitRepository magitRepository;
 
     public XmlReader(String i_XMLLocation){
@@ -36,7 +38,7 @@ public class XmlReader {
 
         initRepository();
 
-       // buildFromMagitRepository();
+        buildFromMagitRepository();
 
         // BuildRepository(magitRepository);
     }
@@ -51,13 +53,23 @@ public class XmlReader {
     {
         File file;
         String sha1;
-      //  for(MagitRepository.MagitBlobs.MagitBlob blob : blobs)
-      //  {
-            //zip
+        InputStream inputStreamBlob;
+        for(MagitRepository.MagitBlobs.MagitBlob blob : magitRepository.getMagitBlobs().getMagitBlob()) {
+            try {
+                inputStreamBlob = new ByteArrayInputStream(blob.getContent().getBytes(Charset.forName("UTF-8")));
+                String outputFile = "C:\\Users\\OL\\Desktop\\Java Course\\" +DigestUtils.sha1Hex(blob.getContent());
+                Files.copy(inputStreamBlob, Paths.get(outputFile));
+                file = new File(outputFile);
+                FileOutputStream fos = new FileOutputStream("compressed.zip");
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+            }
+            catch (IOException e){
+
+            }
+        }
+             //zip
       //       sha1 = DigestUtils.sha1Hex(blob.getContent());
      //        file = new File(sha1);
-
-     //   }
     }
 
 
