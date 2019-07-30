@@ -49,6 +49,79 @@ public class XmlReader {
         buildBlobs(magitRepository.getMagitBlobs());
     }
 
+
+
+    private void foldersBuilder()
+    {
+        Folder mainRepository = new Folder();
+        //mainRepository.setRootFolder(true);
+
+        for(MagitRepository.MagitFolders.MagitSingleFolder folder : magitRepository.getMagitFolders().getMagitSingleFolder())
+        {
+            if(folder.getIsRoot())
+            {
+
+            }
+        }
+
+            for(MagitRepository.MagitFolders.MagitSingleFolder folder : magitRepository.getMagitFolders().getMagitSingleFolder())
+      {
+          mainRepository.AddNewItem(rec(folder));
+      }
+    }
+
+    private BlobData rec(Object object)
+    {
+        switch (object)
+        {
+            case (instanceof MagitRepository.MagitCommits.MagitSingleCommit):
+
+        }
+
+        {
+
+        }
+
+
+
+        if(isFolderExist(folder))
+        {
+
+        }
+        else
+        {
+            for(MagitRepository.MagitFolders.MagitSingleFolder.Items.Item item : folder.getItems().getItem())
+            {
+                if(item.getType().equals("blob"))
+                {
+                     if(isBlobExist(item.getId().toString()))
+                     {
+
+                     }
+                    else
+                     {
+                         folde.createBlob();
+                     }
+                }
+                else if(item.getType().equals("folder"))
+                {
+
+                }
+            }
+        }
+    }
+
+    private  Boolean isFolderExist(MagitRepository.MagitFolders.MagitSingleFolder folder)
+    {
+        return false;
+    }
+
+    private  Boolean isBlobExist(String blobId)
+    {
+        return false;
+    }
+
+
     private void buildBlobs(MagitRepository.MagitBlobs blobs)
     {
         File file;
@@ -57,7 +130,7 @@ public class XmlReader {
         for(MagitRepository.MagitBlobs.MagitBlob blob : magitRepository.getMagitBlobs().getMagitBlob()) {
             try {
                 inputStreamBlob = new ByteArrayInputStream(blob.getContent().getBytes(Charset.forName("UTF-8")));
-                String outputFile = "C:\\Users\\OL\\Desktop\\Java Course\\" +DigestUtils.sha1Hex(blob.getContent());
+                String outputFile = "C:\\magit\\" +DigestUtils.sha1Hex(blob.getContent());
                 Files.copy(inputStreamBlob, Paths.get(outputFile));
                 file = new File(outputFile);
                 FileOutputStream fos = new FileOutputStream("compressed.zip");
