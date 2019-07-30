@@ -49,7 +49,7 @@ public class LogicManager {
 
     public void readXML()
     {
-        XmlReader xmlReader = new XmlReader("C:\\Users\\OL\\IdeaProjects\\MAGit2\\src\\Resourses\\ex1-small.xml");
+        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
         xmlReader.buildFromXML();
 
 
