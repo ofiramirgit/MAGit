@@ -14,13 +14,14 @@ public class InputManager {
         return(user_name);
     }
 
-    public Path IOinitRepository()
+    public String[] IOinitRepository()
     {
-        System.out.println("insert Repository Name:");
-        String RepositoryName = m_Scanner.nextLine();
+        String RepositoryArgs[] = new String[2];
         System.out.println("insert Repository Location:");
-        Path RepositoryPath = Paths.get(m_Scanner.nextLine() + "\\" + RepositoryName+ "\\.magit" );
-        return RepositoryPath;
+        RepositoryArgs[0] =  m_Scanner.nextLine();
+        System.out.println("insert Repository Name:");
+        RepositoryArgs[1] = m_Scanner.nextLine();
+        return RepositoryArgs;
     }
 
     public String getInputActiveRepository()
@@ -32,6 +33,13 @@ public class InputManager {
     public void printActiveRepositoryNotFound()
     {
         System.out.println("Error! Repository Not Found.");
+    }
+
+    public String IOgetCommitMsg()
+    {
+        System.out.println("insert commit massage: ");
+        String commit_msg = m_Scanner.nextLine();
+        return(commit_msg);
     }
 
 

@@ -1,14 +1,14 @@
 package Logic;
 
-import GeneratedXML.MagitRepository;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
+import Zip.ZipFile;
+import org.apache.commons.codec.digest.DigestUtils;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+
 import static Logic.ConstantsEnums.*;
 
 
@@ -16,7 +16,9 @@ import static Logic.ConstantsEnums.*;
 public class LogicManager {
 
     private String m_ActiveUser = "Administrator";
-    private String m_ActiveRepository="C:/default";
+    private String m_ActiveRepository="C:/Hector/f";
+
+    private ZipFile m_zipFile = new ZipFile("C:/Hector/.magit/object");
 
     public String getActiveUser() { return m_ActiveUser; }
 
@@ -33,25 +35,101 @@ public class LogicManager {
         return false;
     }
 
-    public void initRepository(Path i_RepositoryPath) {
-        Boolean dirExists = Files.exists(i_RepositoryPath);
+    public void initRepository(String i_RepositoryArgs[]) {
+        Path RepositoryPath = Paths.get(i_RepositoryArgs[0] + "\\.magit" + "\\object" );
+        Path RepositoryWC = Paths.get(i_RepositoryArgs[0] + "\\" + i_RepositoryArgs[1] );
+
+        Boolean dirExists = Files.exists(RepositoryPath);
         if (dirExists) {
             System.out.println("Directory Alerady Exists");
         } else {
             try {
-                Files.createDirectories(i_RepositoryPath);
+                Files.createDirectories(RepositoryPath);
+                Files.createDirectories(RepositoryWC);
+                setActiveRepository(i_RepositoryArgs[0]);
             } catch (IOException ioExceptionObj) {
                 System.out.println("Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
             }
         }
-
     }
 
-    public void makeNewCommit()
+    public void makeNewCommit(String i_Msg)
     {
-        String msg = m
+        Commit newCommit = new Commit();
+        newCommit.setM_Message(i_Msg);
+        newCommit.setM_CreatedBy(m_ActiveUser);
+        start(newCommit);
+
+        //newCommit.setM_CreatedTime();
+    }
+     public void start(Commit commit)
+     {
+         final File rootFolderFile = new File(m_ActiveRepository);
+         BlobData rootBlobData = recursiveTravelFolders(rootFolderFile);
+         commit.setM_MainSHA1(rootBlobData.getM_Sha1());
+         commit.setM_PreviousSHA1("NONE");
+         commit.
+         String commitSha1 = DigestUtils.sha1Hex(commit.toString());
+         m_zipFile.zipFile(file,rootBlobData.getM_Sha1(),commitSha1 );
+
+     }
+
+    public BlobData recursiveTravelFolders(File file){
+        String sha1 = EmptyString;
+       if(file.isDirectory())
+       {
+           Folder folder = new Folder();
+
+           for (final File f : file.listFiles())
+           {
+               folder.AddNewItem(recursiveTravelFolders(f));
+           }
+
+           sha1 = DigestUtils.sha1Hex(folder.toString());
+
+           BlobData newBlobData2 = new BlobData(file.getName(),
+                   sha1,
+                   FileType.FOLDER, m_ActiveUser, dateFormat.format(new Date()));
+
+           m_zipFile.zipFile(file,folder.printArray(),sha1);
+
+           System.out.println("\nfolder name: " +file.getName()+"\n" + newBlobData2.toString() + "\n");
+
+
+           return newBlobData2;
+
+       }
+       else // text file
+       {
+           // check if sha 1 exists
+           Blob blob = new Blob(getContentOfFile(file));
+
+           sha1 =DigestUtils.sha1Hex(blob.getM_Data());
+
+            m_zipFile.zipFile(file,getContentOfFile(file),sha1);
+
+           BlobData newBlobData = new BlobData(file.getName(),sha1,
+                    FileType.FILE, m_ActiveUser, dateFormat.format(new Date()));
+
+           System.out.println("\nfile name: " +file.getName()+"\n" + newBlobData.toString() + "\n");
+
+          return newBlobData;
+       }
+
+
     }
 
+    public String getContentOfFile(File i_File)
+    {
+        String content = EmptyString;
+        Path path =  Paths.get(i_File.getAbsolutePath());
+        try{
+            content = new String(Files.readAllBytes(path));
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+        return content;
+    }
 
     public void readXML()
     {
@@ -59,3 +137,40 @@ public class LogicManager {
 //        xmlReader.buildFromXML();
     }
 }
+
+
+/*
+public class JavaExample {
+
+    public static void main(String[] args) {
+
+        final File folder = new File("C:\\projects");
+
+        List<String> result = new ArrayList<>();
+
+        search(".*\\.java", folder, result);
+
+        for (String s : result) {
+            System.out.println(s);
+        }
+
+    }
+
+    public static void search(final String pattern, final File folder, List<String> result) {
+        for (final File f : folder.listFiles()) {
+
+            if (f.isDirectory()) {
+                search(pattern, f, result);
+            }
+
+            if (f.isFile()) {
+                if (f.getName().matches(pattern)) {
+                    result.add(f.getAbsolutePath());
+                }
+            }
+
+        }
+    }
+
+}
+ */

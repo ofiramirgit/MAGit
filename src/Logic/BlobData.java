@@ -16,6 +16,19 @@ public class BlobData {
     private String m_Date;
     private Boolean m_Changed = false;
 
+
+    public BlobData(String m_Name, String m_Sha1, FileType m_Type, String m_ChangedBy, String m_Date) {
+        this.m_Name = m_Name;
+        this.m_Sha1 = m_Sha1;
+        this.m_Type = m_Type;
+        this.m_ChangedBy = m_ChangedBy;
+        this.m_Date = m_Date;
+    }
+
+    public String getM_Sha1() {
+        return m_Sha1;
+    }
+
     @Override
     public String toString()
     {

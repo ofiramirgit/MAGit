@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import static Logic.ConstantsEnums.EmptyString;
+
 public class Engine
 {
     private Scanner m_Scanner = new Scanner(System.in);
@@ -40,7 +42,7 @@ public class Engine
             case 3: //Show current commit file system information
                 break;
             case 4: //Commit
-                m_LogicManager.makeNewCommit(m_InputManager.);
+                m_LogicManager.makeNewCommit(m_InputManager.IOgetCommitMsg());
                 break;
             case 5: //Create new branch
                 break;
@@ -60,7 +62,12 @@ public class Engine
                 m_IsRunning = false;
                 break;
             case 12: //Bonus 1
-                m_LogicManager.initRepository(m_InputManager.IOinitRepository());
+                String RepositoryName = EmptyString;
+                String RepositoryLocation = EmptyString;
+                String RepositoryArgs[];
+                RepositoryArgs = m_InputManager.IOinitRepository();
+
+                m_LogicManager.initRepository(RepositoryArgs);
                 break;
         }
     }
