@@ -40,6 +40,7 @@ public class Engine
             case 3: //Show current commit file system information
                 break;
             case 4: //Commit
+                m_LogicManager.makeNewCommit(m_InputManager.);
                 break;
             case 5: //Create new branch
                 break;

@@ -47,11 +47,15 @@ public class LogicManager {
 
     }
 
+    public void makeNewCommit()
+    {
+        String msg = m
+    }
+
+
     public void readXML()
     {
-        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
-        xmlReader.buildFromXML();
-
-
+//        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
+//        xmlReader.buildFromXML();
     }
 }
