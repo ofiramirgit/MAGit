@@ -10,7 +10,7 @@ public class Commit {
         private String m_MainSHA1 = EmptyString;
         private String m_PreviousSHA1 = null;
         private String m_Message = EmptyString;
-        private Date m_CreatedTime;
+        private String m_CreatedTime;
         private String m_CreatedBy = EmptyString;
 
         public void setM_MainSHA1(String m_MainSHA1) {
@@ -21,7 +21,7 @@ public class Commit {
                 this.m_Message = m_Message;
         }
 
-        public void setM_CreatedTime(Date m_CreatedTime) {
+        public void setM_CreatedTime(String m_CreatedTime) {
                 this.m_CreatedTime = m_CreatedTime;
         }
 
@@ -35,12 +35,6 @@ public class Commit {
 
         @Override
         public String toString() {
-                return "Commit{" +
-                        "m_MainSHA1='" + m_MainSHA1 + '\'' +
-                        ", m_PreviousSHA1='" + m_PreviousSHA1 + '\'' +
-                        ", m_Message='" + m_Message + '\'' +
-                        ", m_CreatedTime=" + m_CreatedTime +
-                        ", m_CreatedBy='" + m_CreatedBy + '\'' +
-                        '}';
+                return m_MainSHA1 + ", " + m_PreviousSHA1 + ", " + m_Message + ", " + m_CreatedTime + ", " + m_CreatedBy;
         }
 }

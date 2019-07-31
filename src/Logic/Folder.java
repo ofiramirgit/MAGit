@@ -42,13 +42,23 @@ public class Folder
                 '}';
     }
 
+    /* public String CompareSha1()
+    {
+        //if the content of one of the blobData changed so sha1 should change.
+        for(BlobData blob : LibraryFiles)
+        {
+         //if(blob changed)
+            //return toString();
+        }
+    }*/
+
 
     public String printArray() {
         Integer index=0;
         String ArrayString=EmptyString;
         for(BlobData blob : LibraryFiles)
         {
-            ArrayString += blob.getM_Sha1() + "\n";
+            ArrayString += blob.toString()+"\n";
         }
         return ArrayString;
     }

@@ -58,6 +58,8 @@ public class LogicManager {
         Commit newCommit = new Commit();
         newCommit.setM_Message(i_Msg);
         newCommit.setM_CreatedBy(m_ActiveUser);
+        newCommit.setM_PreviousSHA1("NONE");
+        newCommit.setM_CreatedTime(dateFormat.format(new Date()));
         start(newCommit);
 
         //newCommit.setM_CreatedTime();
@@ -67,10 +69,10 @@ public class LogicManager {
          final File rootFolderFile = new File(m_ActiveRepository);
          BlobData rootBlobData = recursiveTravelFolders(rootFolderFile);
          commit.setM_MainSHA1(rootBlobData.getM_Sha1());
-         commit.setM_PreviousSHA1("NONE");
-         commit.
+
          String commitSha1 = DigestUtils.sha1Hex(commit.toString());
-         m_zipFile.zipFile(file,rootBlobData.getM_Sha1(),commitSha1 );
+
+         m_zipFile.zipFile(commitSha1,commit.toString());
 
      }
 
@@ -87,16 +89,16 @@ public class LogicManager {
 
            sha1 = DigestUtils.sha1Hex(folder.toString());
 
-           BlobData newBlobData2 = new BlobData(file.getName(),
+           BlobData DirectoryBlob = new BlobData(file.getName(),
                    sha1,
                    FileType.FOLDER, m_ActiveUser, dateFormat.format(new Date()));
 
-           m_zipFile.zipFile(file,folder.printArray(),sha1);
+           m_zipFile.zipFile(sha1,folder.printArray());
 
-           System.out.println("\nfolder name: " +file.getName()+"\n" + newBlobData2.toString() + "\n");
+           System.out.println("\nfolder name: " +file.getName()+"\n" + DirectoryBlob.toString() + "\n");
 
 
-           return newBlobData2;
+           return DirectoryBlob;
 
        }
        else // text file
@@ -106,7 +108,7 @@ public class LogicManager {
 
            sha1 =DigestUtils.sha1Hex(blob.getM_Data());
 
-            m_zipFile.zipFile(file,getContentOfFile(file),sha1);
+            m_zipFile.zipFile(sha1,getContentOfFile(file));
 
            BlobData newBlobData = new BlobData(file.getName(),sha1,
                     FileType.FILE, m_ActiveUser, dateFormat.format(new Date()));
