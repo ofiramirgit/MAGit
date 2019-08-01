@@ -80,6 +80,7 @@ public class LogicManager {
         newCommit.setM_PreviousSHA1("NONE");
         newCommit.setM_CreatedTime(dateFormat.format(new Date()));
         start(newCommit);
+        getLastCommitStucture();
 
     }
      public void start(Commit commit)
@@ -108,42 +109,33 @@ public class LogicManager {
            Folder folder = new Folder();
 
            for (final File f : file.listFiles())
-           {
                folder.AddNewItem(recursiveTravelFolders(f));
-           }
 
            sha1 = DigestUtils.sha1Hex(folder.toString());
-
-           BlobData DirectoryBlob = new BlobData(file.getName(),
-                   sha1,
-                   FileType.FOLDER, m_ActiveUser, dateFormat.format(new Date()));
+           BlobData DirectoryBlob =
+                   new BlobData(file.getName(), sha1, FileType.FOLDER,
+                   m_ActiveUser, dateFormat.format(new Date())
+                   );
 
            m_zipFile.zipFile(sha1,folder.printArray());
-
-           System.out.println("\nfolder name: " +file.getName()+"\n" + DirectoryBlob.toString() + "\n");
-
+           System.out.println("\nfolder name: " +file.getName()+"\n" + DirectoryBlob.toString() + "\n");//for testing
 
            return DirectoryBlob;
-
-       }
-       else // text file
-       {
+       } else {
            // check if sha 1 exists
            Blob blob = new Blob(getContentOfFile(file));
 
            sha1 =DigestUtils.sha1Hex(blob.getM_Data());
-
             m_zipFile.zipFile(sha1,getContentOfFile(file));
 
-           BlobData newBlobData = new BlobData(file.getName(),sha1,
-                    FileType.FILE, m_ActiveUser, dateFormat.format(new Date()));
+           BlobData newBlobData =
+                   new BlobData(file.getName(),sha1, FileType.FILE,
+                           m_ActiveUser, dateFormat.format(new Date())
+                   );
 
-           System.out.println("\nfile name: " +file.getName()+"\n" + newBlobData.toString() + "\n");
-
+           System.out.println("\nfile name: " +file.getName()+"\n" + newBlobData.toString() + "\n");//for testing
           return newBlobData;
        }
-
-
     }
 
     public String getContentOfFile(File i_File)
@@ -162,7 +154,6 @@ public class LogicManager {
     {
         String BranchActiveName = EmptyString;
 
-       // Path path =  Paths.get(m_ActiveRepository + File.separator +".."+ File.separator +".magit"+File.separator +"HEAD");
         Path path =  Paths.get(getM_ActiveRepository() + "/.magit/branches/HEAD.txt");
         try{
             BranchActiveName = new String(Files.readAllBytes(path));
@@ -172,6 +163,14 @@ public class LogicManager {
         return BranchActiveName;
     }
 
+    public void getLastCommitStucture()
+    {
+        String BranchLastCommitName = getBranchActiveName();
+        m_zipFile.unZipIt(m_ActiveRepository + "/.magit/branches/"+BranchLastCommitName+".zip",m_ActiveRepository + "/.magit/branches");
+        String LastCommiteContent = getContentOfFile(new File (m_ActiveRepository + "/.magit/branches/"+BranchLastCommitName+".txt"));
+        //BuildFolderByRecurtion(LastCommiteContent);
+    }
+
     public void readXML()
     {
 //        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
@@ -179,39 +178,3 @@ public class LogicManager {
     }
 }
 
-
-/*
-public class JavaExample {
-
-    public static void main(String[] args) {
-
-        final File folder = new File("C:\\projects");
-
-        List<String> result = new ArrayList<>();
-
-        search(".*\\.java", folder, result);
-
-        for (String s : result) {
-            System.out.println(s);
-        }
-
-    }
-
-    public static void search(final String pattern, final File folder, List<String> result) {
-        for (final File f : folder.listFiles()) {
-
-            if (f.isDirectory()) {
-                search(pattern, f, result);
-            }
-
-            if (f.isFile()) {
-                if (f.getName().matches(pattern)) {
-                    result.add(f.getAbsolutePath());
-                }
-            }
-
-        }
-    }
-
-}
- */

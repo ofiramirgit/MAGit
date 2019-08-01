@@ -1,12 +1,11 @@
 package Zip;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import static Logic.ConstantsEnums.EmptyString;
@@ -58,11 +57,26 @@ public class ZipFile {
             e.printStackTrace();
         }
     }
-    public void unZipIt()
-    {
+    public void unZipIt(String zipFile, String outputFolder){
+        byte[] buffer = new byte[1024];
+        try{
+            ZipInputStream zis =
+                    new ZipInputStream(new FileInputStream(zipFile));
 
+            //get the zipped file list entry
+            ZipEntry ze = zis.getNextEntry();
+            String fileName = ze.getName();
+            File newFile = new File(outputFolder + File.separator + fileName);
+            FileOutputStream fos = new FileOutputStream(newFile);
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+            fos.close();
+            zis.closeEntry();
+            zis.close();
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
     }
-
-
-
 }
