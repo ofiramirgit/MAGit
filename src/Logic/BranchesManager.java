@@ -29,5 +29,6 @@ public class BranchesManager {
 
             return BranchSha1;
         }
+        return BranchSha1;//forTesting
     }
 }

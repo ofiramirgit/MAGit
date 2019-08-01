@@ -37,9 +37,27 @@ public class ZipFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
+    public void zipFileToBranchActive(String ActiveBranchName,String commitSha1)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(commitSha1);
 
+        File ZipFile = new File(m_dirObject + "/../branches/" + ActiveBranchName + ".zip");
+        ZipOutputStream out = null;
+        try {
+            out = new ZipOutputStream(new FileOutputStream(ZipFile));
+            ZipEntry e = new ZipEntry(ActiveBranchName+".txt");
+            out.putNextEntry(e);
+            byte[] data = sb.toString().getBytes();
+            out.write(data, 0, data.length);
+            out.closeEntry();
+            out.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void unZipIt()
     {
 

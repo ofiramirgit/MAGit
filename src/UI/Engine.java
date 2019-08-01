@@ -20,7 +20,7 @@ public class Engine
     {
         while(m_IsRunning)
         {
-            m_Menu.printInfoMenu(m_LogicManager.getActiveUser(),m_LogicManager.getActiveRepository());
+            m_Menu.printInfoMenu(m_LogicManager.getM_ActiveUser(),m_LogicManager.getM_ActiveRepository());
             m_Menu.printMenu();
             execute(m_Scanner.nextInt());
         }
@@ -30,7 +30,7 @@ public class Engine
     {
         switch(i_Option){
             case -1: //Change username
-                m_LogicManager.setActiveUser(m_InputManager.IOsetActiveUser());
+                m_LogicManager.setM_ActiveUser(m_InputManager.IOsetActiveUser());
                 break;
             case 0: //Load from XML
                 m_LogicManager.readXML();

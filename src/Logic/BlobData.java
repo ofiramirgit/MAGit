@@ -37,16 +37,18 @@ public class BlobData {
         return str;
     }
 
-   /* public String CompareSha1()
-    {
-        //if the content of file with the same sha1 is changed so sha1 should change.
-
-        //if(blob changed){
-            if exist check if changed
-            check with the last commit that saved in head branch. if all file exist or if its new file
-            add to array of blob changed
-            //return toString();
-
-    }*/
+//   public String CompareSha1(String LastSha1)
+//    {
+//
+//        /*
+//        //if the content of file with the same sha1 is changed so sha1 should change.
+//
+//        //if(blob changed){
+//            if exist check if changed
+//            check with the last commit that saved in head branch. if all file exist or if its new file
+//            add to array of blob changed
+//            //return toString();
+//*/
+//    }
 
 }

@@ -16,15 +16,24 @@ import static Logic.ConstantsEnums.*;
 public class LogicManager {
 
     private String m_ActiveUser = "Administrator";
-    private String m_ActiveRepository="C:/Hector/f";
+    private String m_ActiveRepository = EmptyString;
+    private String m_ActiveRepositoryName = EmptyString;
+    private ZipFile m_zipFile;
 
-    private ZipFile m_zipFile = new ZipFile("C:/Hector/.magit/object");
+    public void setM_ActiveUser(String m_ActiveUser) {this.m_ActiveUser = m_ActiveUser;}
 
-    public String getActiveUser() { return m_ActiveUser; }
+    public String getM_ActiveUser() { return m_ActiveUser; }
 
-    public void setActiveUser(String i_ActiveUser) { m_ActiveUser = i_ActiveUser; }
+    public String getM_ActiveRepository() { return m_ActiveRepository; }
 
-    public String getActiveRepository(){ return m_ActiveRepository; }
+    public void setM_ActiveRepository(String m_ActiveRepository) {
+        this.m_ActiveRepository = m_ActiveRepository;
+    }
+
+    public String getM_ActiveRepositoryName() { return m_ActiveRepositoryName; }
+
+    public void setM_ActiveRepositoryName(String m_ActiveRepositoryName) {this.m_ActiveRepositoryName = m_ActiveRepositoryName; }
+
     public Boolean setActiveRepository(String i_ActiveRepository)
     {
         Path RepositoryPath = Paths.get(i_ActiveRepository + "\\.magit" );
@@ -37,6 +46,9 @@ public class LogicManager {
 
     public void initRepository(String i_RepositoryArgs[]) {
         Path RepositoryPath = Paths.get(i_RepositoryArgs[0] + "\\.magit" + "\\object" );
+        Path BranchesPath = Paths.get(i_RepositoryArgs[0] + "\\.magit" + "\\branches" );
+        Path ActiveBranchePath = Paths.get(i_RepositoryArgs[0] + "\\.magit" + "\\branches\\HEAD.txt" );
+        Path BranchesNamesPath = Paths.get(i_RepositoryArgs[0] + "\\.magit" + "\\branches\\NAMES.txt" );
         Path RepositoryWC = Paths.get(i_RepositoryArgs[0] + "\\" + i_RepositoryArgs[1] );
 
         Boolean dirExists = Files.exists(RepositoryPath);
@@ -45,8 +57,15 @@ public class LogicManager {
         } else {
             try {
                 Files.createDirectories(RepositoryPath);
+                Files.createDirectories(BranchesPath);
                 Files.createDirectories(RepositoryWC);
+                Files.createFile(ActiveBranchePath);
+                Files.createFile(BranchesNamesPath);
+                Files.write(ActiveBranchePath, "master".getBytes());
+                Files.write(BranchesNamesPath, "master".getBytes());
+
                 setActiveRepository(i_RepositoryArgs[0]);
+                m_ActiveRepositoryName = i_RepositoryArgs[1];
             } catch (IOException ioExceptionObj) {
                 System.out.println("Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
             }
@@ -62,19 +81,25 @@ public class LogicManager {
         newCommit.setM_CreatedTime(dateFormat.format(new Date()));
         start(newCommit);
 
-        //newCommit.setM_CreatedTime();
     }
      public void start(Commit commit)
      {
-         final File rootFolderFile = new File(m_ActiveRepository);
+         m_zipFile = new ZipFile(m_ActiveRepository +"/.magit/object");
+         final File rootFolderFile = new File(m_ActiveRepository + "/" + m_ActiveRepositoryName);
          BlobData rootBlobData = recursiveTravelFolders(rootFolderFile);
          commit.setM_MainSHA1(rootBlobData.getM_Sha1());
 
          String commitSha1 = DigestUtils.sha1Hex(commit.toString());
-
          m_zipFile.zipFile(commitSha1,commit.toString());
+         updateBranchActiveCommit(commit);
 
      }
+
+    private void updateBranchActiveCommit(Commit commit) {
+        String ActiveBranchName = getBranchActiveName();
+        //if there is old commit on the same name of the active branch so update the new commit in the field of old commit
+        m_zipFile.zipFileToBranchActive(ActiveBranchName,commit.toString());
+    }
 
     public BlobData recursiveTravelFolders(File file){
         String sha1 = EmptyString;
@@ -131,6 +156,20 @@ public class LogicManager {
             ex.printStackTrace();
         }
         return content;
+    }
+
+    public String getBranchActiveName()
+    {
+        String BranchActiveName = EmptyString;
+
+       // Path path =  Paths.get(m_ActiveRepository + File.separator +".."+ File.separator +".magit"+File.separator +"HEAD");
+        Path path =  Paths.get(getM_ActiveRepository() + "/.magit/branches/HEAD.txt");
+        try{
+            BranchActiveName = new String(Files.readAllBytes(path));
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+        return BranchActiveName;
     }
 
     public void readXML()
