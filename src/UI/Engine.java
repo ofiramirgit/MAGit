@@ -33,7 +33,7 @@ public class Engine
                 m_LogicManager.setM_ActiveUser(m_InputManager.IOsetActiveUser());
                 break;
             case 0: //Load from XML
-                m_LogicManager.readXML();
+                //m_LogicManager.readXML();
                 break;
             case 1: //Working copy status
                 break;

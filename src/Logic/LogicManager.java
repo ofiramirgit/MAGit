@@ -168,13 +168,25 @@ public class LogicManager {
         String BranchLastCommitName = getBranchActiveName();
         m_zipFile.unZipIt(m_ActiveRepository + "/.magit/branches/"+BranchLastCommitName+".zip",m_ActiveRepository + "/.magit/branches");
         String LastCommiteContent = getContentOfFile(new File (m_ActiveRepository + "/.magit/branches/"+BranchLastCommitName+".txt"));
+        AnalyzeString(LastCommiteContent);
         //BuildFolderByRecurtion(LastCommiteContent);
     }
 
-    public void readXML()
+    public BlobData AnalyzeString(String i_DescribeString) {
+        String[] strArr = i_DescribeString.split(", ", 5);
+
+        FileType typeOfFile =FileType.FILE;
+        if(strArr[2].equals("FOLDER"))
+            typeOfFile = FileType.FOLDER;
+
+        return new BlobData (strArr[0],strArr[1],typeOfFile,strArr[3],strArr[4]);
+    }
+
+    /*public void readXML()
     {
 //        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
 //        xmlReader.buildFromXML();
     }
 }
-
+*/
+    }
