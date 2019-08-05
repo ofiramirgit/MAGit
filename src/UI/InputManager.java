@@ -10,18 +10,18 @@ public class InputManager {
     public String IOsetActiveUser()
     {
         System.out.println("insert new Active UserName:");
-        String user_name = m_Scanner.nextLine();
-        return(user_name);
+        String userName = m_Scanner.nextLine();
+        return(userName);
     }
 
     public String[] IOinitRepository()
     {
-        String RepositoryArgs[] = new String[2];
+        String repositoryArgs[] = new String[2];
         System.out.println("insert Repository Location:");
-        RepositoryArgs[0] =  m_Scanner.nextLine();
+        repositoryArgs[0] =  m_Scanner.nextLine();
         System.out.println("insert Repository Name:");
-        RepositoryArgs[1] = m_Scanner.nextLine();
-        return RepositoryArgs;
+        repositoryArgs[1] = m_Scanner.nextLine();
+        return repositoryArgs;
     }
 
     public String getInputActiveRepository()
@@ -38,9 +38,18 @@ public class InputManager {
     public String IOgetCommitMsg()
     {
         System.out.println("insert commit massage: ");
-        String commit_msg = m_Scanner.nextLine();
-        return(commit_msg);
+        String commitMsg = m_Scanner.nextLine();
+        return(commitMsg);
     }
 
 
+    public String getInputNewBranchName() {
+        System.out.println("insert new branch name: ");
+        String branchName = m_Scanner.nextLine();
+        return(branchName);
+    }
+
+    public void printBranchNameExist() {
+        System.out.println("Error! Branch Name Exist!");
+    }
 }

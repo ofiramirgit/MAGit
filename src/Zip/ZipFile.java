@@ -11,18 +11,13 @@ import java.util.zip.ZipOutputStream;
 import static Logic.ConstantsEnums.EmptyString;
 
 public class ZipFile {
-    String m_dirObject;
 
-    public ZipFile(String m_dirObject) {
-        this.m_dirObject = m_dirObject;
-    }
-
-    public void zipFile(String i_Sha1,String i_FileContent)
+    public void zipFile(String i_FolderToSave, String i_Sha1,String i_FileContent)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(i_FileContent);
 
-        File ZipFile = new File(m_dirObject + "/" + i_Sha1 + ".zip");
+        File ZipFile = new File(i_FolderToSave + "/" + i_Sha1 + ".zip");
         ZipOutputStream out = null;
         try {
             out = new ZipOutputStream(new FileOutputStream(ZipFile));
@@ -37,12 +32,12 @@ public class ZipFile {
             e.printStackTrace();
         }
     }
-    public void zipFileToBranchActive(String ActiveBranchName,String commitSha1)
+    public void zipFileToBranchActive(String i_FolderToSave,String ActiveBranchName,String commitSha1)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(commitSha1);
 
-        File ZipFile = new File(m_dirObject + "/../branches/" + ActiveBranchName + ".zip");
+        File ZipFile = new File( i_FolderToSave +File.separator + ActiveBranchName + ".zip");
         ZipOutputStream out = null;
         try {
             out = new ZipOutputStream(new FileOutputStream(ZipFile));

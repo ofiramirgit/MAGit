@@ -12,6 +12,6 @@ public class ConstantsEnums {
 
     public static final String EmptyString = "";
 
-     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy-hh:mm:ss:sss");
+     public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy-hh:mm:ss:sss");
 
 }

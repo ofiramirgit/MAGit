@@ -8,7 +8,6 @@ import Logic.ConstantsEnums.*;
 import javax.xml.bind.annotation.*;
 
 public class BlobData {
-    private String m_Id = EmptyString;
     private String m_Name = EmptyString;
     private String m_Sha1 = EmptyString;
     private FileType m_Type = FileType.NONE;
@@ -24,8 +23,35 @@ public class BlobData {
         this.m_Date = m_Date;
     }
 
+    public BlobData(String i_DescriptionBlobData){
+        String[] strArr = i_DescriptionBlobData.split(", ");
+        this.m_Name = strArr[0];
+        this.m_Sha1 = strArr[1];
+        this.m_Type = FileType.valueOf(strArr[2]);
+        this.m_ChangedBy = strArr[3];
+        this.m_Date = strArr[4];
+    }
+
+
+
     public String getM_Sha1() {
         return m_Sha1;
+    }
+
+    public FileType getM_Type() {
+        return m_Type;
+    }
+
+    public String getM_Name() {
+        return m_Name;
+    }
+
+    public String getM_ChangedBy() {
+        return m_ChangedBy;
+    }
+
+    public String getM_Date() {
+        return m_Date;
     }
 
     @Override

@@ -57,9 +57,8 @@ public class Folder
         Integer index=0;
         String ArrayString=EmptyString;
         for(BlobData blob : LibraryFiles)
-        {
-            ArrayString += blob.toString()+"\n";
-        }
+            ArrayString += blob.toString()+"\n ~ ";
+        ArrayString = ArrayString.substring(0, ArrayString.length() - 3);
         return ArrayString;
     }
 

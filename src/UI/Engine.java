@@ -29,45 +29,57 @@ public class Engine
     private void execute(Integer i_Option)
     {
         switch(i_Option){
-            case -1: //Change username
+
+            case 1: //Change username
                 m_LogicManager.setM_ActiveUser(m_InputManager.IOsetActiveUser());
                 break;
-            case 0: //Load from XML
+
+            case 2://Load from XML
                 //m_LogicManager.readXML();
                 break;
-            case 1: //Working copy status
-                break;
-            case 2: //Show current branch history
-                break;
-            case 3: //Show current commit file system information
-                break;
-            case 4: //Commit
-                m_LogicManager.makeNewCommit(m_InputManager.IOgetCommitMsg());
-                break;
-            case 5: //Create new branch
-                break;
-            case 6: //List available branches
-                break;
-            case 7: //Check out branch
-                break;
-            case 8: //Export repository to XML
-                break;
-            case 9: //Switch repository
-                if(!m_LogicManager.setActiveRepository(m_InputManager.getInputActiveRepository()))
+
+            case 3://Switch repository
+                if(!m_LogicManager.setM_ActiveRepository(m_InputManager.getInputActiveRepository()))
                     m_InputManager.printActiveRepositoryNotFound();
                 break;
-            case 10: //Merge with branch
-                break;
-            case 11: //Exit
-                m_IsRunning = false;
-                break;
-            case 12: //Bonus 1
-                String RepositoryName = EmptyString;
-                String RepositoryLocation = EmptyString;
-                String RepositoryArgs[];
-                RepositoryArgs = m_InputManager.IOinitRepository();
 
-                m_LogicManager.initRepository(RepositoryArgs);
+            case 4: //Show current commit file system information
+                m_LogicManager.showLastCommit();
+                break;
+
+            case 5: //Working copy status
+                m_LogicManager.WorkingCopyStatus();
+                break;
+
+            case 6://Commit
+                m_LogicManager.createNewCommit(m_InputManager.IOgetCommitMsg());
+                break;
+
+            case 7: //List available branches
+                break;
+
+            case 8://Create new branch
+                if(!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
+                    m_InputManager.printBranchNameExist();
+                break;
+
+            case 9: //Check out branch
+                break;
+
+            case 10: //Check out Head branch
+                break;
+
+            case 11: //Show current branch history
+                break;
+
+            case 12: //Exit
+                    m_IsRunning = false;//Bonus 1
+                break;
+
+            case 13: //Bonus1
+                String repositoryArgs[];
+                repositoryArgs = m_InputManager.IOinitRepository();
+                m_LogicManager.initRepository(repositoryArgs);
                 break;
         }
     }
