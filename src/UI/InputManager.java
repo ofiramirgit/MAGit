@@ -52,4 +52,14 @@ public class InputManager {
     public void printBranchNameExist() {
         System.out.println("Error! Branch Name Exist!");
     }
+
+    public String getInputBranchNameToDelete() {
+        System.out.println("insert branch name you want to delete: ");
+        String branchName = m_Scanner.nextLine();
+        return branchName;
+    }
+
+    public void printBranchNameIsActive() {
+        System.out.println("Error! Branch is Active!");
+    }
 }

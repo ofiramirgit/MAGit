@@ -12,16 +12,16 @@ import static Logic.ConstantsEnums.EmptyString;
 
 public class ZipFile {
 
-    public void zipFile(String i_FolderToSave, String i_Sha1,String i_FileContent)
+    public void zipFile(String i_FolderToSave, String i_FileName,String i_FileContent)
     {
         StringBuilder sb = new StringBuilder();
         sb.append(i_FileContent);
 
-        File ZipFile = new File(i_FolderToSave + "/" + i_Sha1 + ".zip");
+        File ZipFile = new File(i_FolderToSave + File.separator + i_FileName + ".zip");
         ZipOutputStream out = null;
         try {
             out = new ZipOutputStream(new FileOutputStream(ZipFile));
-            ZipEntry e = new ZipEntry(i_Sha1+".txt");
+            ZipEntry e = new ZipEntry(i_FileName+".txt");
             out.putNextEntry(e);
             byte[] data = sb.toString().getBytes();
             out.write(data, 0, data.length);
@@ -32,26 +32,7 @@ public class ZipFile {
             e.printStackTrace();
         }
     }
-    public void zipFileToBranchActive(String i_FolderToSave,String ActiveBranchName,String commitSha1)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append(commitSha1);
 
-        File ZipFile = new File( i_FolderToSave +File.separator + ActiveBranchName + ".zip");
-        ZipOutputStream out = null;
-        try {
-            out = new ZipOutputStream(new FileOutputStream(ZipFile));
-            ZipEntry e = new ZipEntry(ActiveBranchName+".txt");
-            out.putNextEntry(e);
-            byte[] data = sb.toString().getBytes();
-            out.write(data, 0, data.length);
-            out.closeEntry();
-            out.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     public void unZipIt(String zipFile, String outputFolder){
         byte[] buffer = new byte[1024];
         try{

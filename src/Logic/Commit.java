@@ -12,8 +12,8 @@ public class Commit {
         private String m_Message = EmptyString;
         private String m_CreatedTime;
         private String m_CreatedBy = EmptyString;
-        Commit(){
 
+        Commit(){
         }
 
         Commit(String i_CommitDescription){

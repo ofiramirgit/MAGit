@@ -48,14 +48,16 @@ public class Engine
                 break;
 
             case 5: //Working copy status
-                m_LogicManager.WorkingCopyStatus();
+                //m_LogicManager.WorkingCopyStatus();
                 break;
 
             case 6://Commit
-                m_LogicManager.createNewCommit(m_InputManager.IOgetCommitMsg());
+                m_LogicManager.createCommit(m_InputManager.IOgetCommitMsg());
                 break;
 
             case 7: //List available branches
+                m_LogicManager.showAllBranches();
+
                 break;
 
             case 8://Create new branch
@@ -64,12 +66,15 @@ public class Engine
                 break;
 
             case 9: //Check out branch
+                if(!m_LogicManager.deleteBranch(m_InputManager.getInputBranchNameToDelete()))
+                    m_InputManager.printBranchNameIsActive();
                 break;
 
             case 10: //Check out Head branch
                 break;
 
             case 11: //Show current branch history
+                m_LogicManager.historyOfActiveBranch();
                 break;
 
             case 12: //Exit
