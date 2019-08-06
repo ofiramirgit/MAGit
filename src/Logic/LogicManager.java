@@ -234,6 +234,16 @@ public void showLastCommit()
         }
     }
 
+    public void TESTING_CHANGING_BRANCH(String branchName) {
+        File activeBranchFile = new File(getPathFolder("branches") + File.separator + "HEAD.txt");
+        activeBranchFile.delete();
+        Path path = Paths.get(getPathFolder("branches")+ File.separator + "HEAD.txt");
+        try {
+            Files.write(path, branchName.getBytes(), StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 
@@ -314,26 +324,34 @@ public void showLastCommit()
         return directoryBlobDatas;
     }
     */
-
-
+    /* Show All Branches -- Start */
+    /* Case 7 */
     public void showAllBranches()
     {
         File branchesNamesFile = new File (getPathFolder("branches")+ File.separator + "NAMES.txt");
+
         String[] branchesNamesArray = getContentOfFile(branchesNamesFile).split(System.lineSeparator());
         for(String branchName : branchesNamesArray)
         {
-            String branchSha1 = getContentOfZipFile(getPathFolder("branches"), branchName);
-            Commit branchCommit = new Commit(getContentOfZipFile(getPathFolder("object"),branchSha1));
-            System.out.println("Branch Name:    " + branchName);
-            if(getBranchActiveName().equals(branchName))
-                System.out.print(" (Active Branch");
-            System.out.println("------------------------------");
-            System.out.println("Branch Sha1:    " + branchSha1);
-            System.out.println("Branch Message: " + branchCommit.getM_Message() + System.lineSeparator());
+
+            String path = getPathFolder("branches")+ File.separator + branchName + ".zip";
+            System.out.println(path);
+            Path pathPaths = Paths.get(path);
+            if(Files.exists(pathPaths)) {
+                String branchSha1 = getContentOfZipFile(getPathFolder("branches"), branchName);
+                Commit branchCommit = new Commit(getContentOfZipFile(getPathFolder("object"), branchSha1));
+                System.out.println("Branch Name:    " + branchName);
+                if (getBranchActiveName().equals(branchName))
+                    System.out.print(" (Active Branch");
+                System.out.println("------------------------------");
+                System.out.println("Branch Sha1:    " + branchSha1);
+                System.out.println("Branch Message: " + branchCommit.getM_Message() + System.lineSeparator());
+            }
         }
 
     }
-
+    /* Case 7 */
+    /* Show All Branches -- Start */
 
     /* Create New Branch -- Start */
     /* Case 8 */
