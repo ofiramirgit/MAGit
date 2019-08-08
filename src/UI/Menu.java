@@ -2,9 +2,11 @@ package UI;
 
 public class Menu {
 
+    public static final int MENU_OPTIONS = 14;
+
     public void printMenu() {
         System.out.print(
-                "1. Change username\n" +
+                        "1.  Change username\n" +
                         "2.  Load from XML\n" +
                         "3.  Switch repository\n" +
                         "4.  Show current commit file system information\n" +

@@ -1,15 +1,10 @@
 package UI;
 import Logic.LogicManager;
-
-import java.nio.file.Path;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import static Logic.ConstantsEnums.EmptyString;
 
 public class Engine
 {
-    private Scanner m_Scanner = new Scanner(System.in);
     private Boolean m_IsRunning = true;
     private LogicManager m_LogicManager = new LogicManager();
     private InputManager m_InputManager = new InputManager();
@@ -22,7 +17,7 @@ public class Engine
         {
             m_Menu.printInfoMenu(m_LogicManager.getM_ActiveUser(),m_LogicManager.getM_ActiveRepository());
             m_Menu.printMenu();
-            execute(m_Scanner.nextInt());
+            execute(m_InputManager.GetNextMenuOption());
         }
     }
 
@@ -30,10 +25,10 @@ public class Engine
     {
         switch(i_Option){
             case -1:
-                m_LogicManager.TESTING_CHANGING_BRANCH(m_InputManager.IOsetActiveUser());
+               // m_LogicManager.TESTING_CHANGING_BRANCH(m_InputManager.IOsetActiveUser());
 
             case 1: //Change username
-                m_LogicManager.setM_ActiveUser(m_InputManager.IOsetActiveUser());
+                m_LogicManager.setM_ActiveUser(m_InputManager.readActiveUserName());
                 break;
 
             case 2://Load from XML
@@ -54,7 +49,7 @@ public class Engine
                 break;
 
             case 6://Commit
-                m_LogicManager.createCommit(m_InputManager.IOgetCommitMsg());
+                m_LogicManager.createCommit(m_InputManager.readCommitMsg());
                 break;
 
             case 7: //List available branches

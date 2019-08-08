@@ -17,6 +17,8 @@ public class ConstantsEnums {
     }
 
     public static final String EmptyString = "";
+    public static final String Separator = ", ";
+    public static final Integer NameLength = 50;
 
      public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy-hh:mm:ss:sss");
 

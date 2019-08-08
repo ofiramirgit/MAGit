@@ -1,18 +1,15 @@
 package Logic;
-import java.util.*;
 import  java.lang.*;
 
 import static Logic.ConstantsEnums.*;
 import Logic.ConstantsEnums.*;
-
-import javax.xml.bind.annotation.*;
 
 public class BlobData {
     private String m_Name = EmptyString;
     private String m_Sha1 = EmptyString;
     private FileType m_Type = FileType.NONE;
     private String m_ChangedBy = EmptyString;
-    private String m_Date;
+    private String m_Date = EmptyString;
 
 
     public BlobData(String m_Name, String m_Sha1, FileType m_Type, String m_ChangedBy, String m_Date) {
@@ -24,7 +21,7 @@ public class BlobData {
     }
 
     public BlobData(String i_DescriptionBlobData){
-        String[] strArr = i_DescriptionBlobData.split(", ");
+        String[] strArr = i_DescriptionBlobData.split(Separator);
         this.m_Name = strArr[0];
         this.m_Sha1 = strArr[1];
         this.m_Type = FileType.valueOf(strArr[2]);
@@ -57,9 +54,9 @@ public class BlobData {
     @Override
     public String toString()
     {
-        String str = m_Name + ", " + m_Sha1 + ", "
-                    + m_Type.toString() + ", " +
-                    m_ChangedBy + ", " + m_Date ;
+        String str = m_Name + Separator + m_Sha1 + Separator
+                    + m_Type.toString() + Separator +
+                    m_ChangedBy + Separator + m_Date ;
         return str;
     }
 

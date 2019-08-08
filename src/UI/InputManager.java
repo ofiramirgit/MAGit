@@ -4,14 +4,74 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+import static Logic.ConstantsEnums.EmptyString;
+import static Logic.ConstantsEnums.NameLength;
+import static UI.Menu.MENU_OPTIONS;
+
 public class InputManager {
     private Scanner m_Scanner = new Scanner(System.in);
 
-    public String IOsetActiveUser()
+    public Integer GetNextMenuOption()
     {
-        System.out.println("insert new Active UserName:");
-        String userName = m_Scanner.nextLine();
-        return(userName);
+        String stringOption = EmptyString;
+       Integer option = 0;
+       Boolean loop = true;
+
+       while(loop)
+       {
+           loop = false;
+           stringOption = m_Scanner.nextLine();
+
+           try
+           {
+               option = Integer.parseInt(stringOption);
+
+               if((option < -1 || option >= MENU_OPTIONS) || option == 0)
+               {
+                   loop = true;
+                   System.out.println("Illegal Choice.");
+                   System.out.println("Please choose option from the menu:");
+               }
+           }
+           catch (Exception e)
+           {
+               loop = true;
+               System.out.println("Please enter a number from the menu:");
+           }
+
+       }
+
+       return option;
+    }
+
+    public String readActiveUserName()
+    {
+        Boolean loop = true;
+        String userName = EmptyString;
+        System.out.println("Please insert user name:");
+
+       while (loop)
+       {
+           loop = false;
+           userName = m_Scanner.nextLine();
+
+           if(!checkInputStringLen(userName))
+           {
+               loop = true;
+               System.out.println(" Please insert user name up to 50 characters:");
+           }
+       }
+
+        return userName;
+    }
+
+    private Boolean checkInputStringLen(String i_String)
+    {
+        if(i_String.length() == 0 || i_String.length() > 50)
+        {
+         return false;
+        }
+        return true;
     }
 
     public String[] IOinitRepository()
@@ -35,11 +95,25 @@ public class InputManager {
         System.out.println("Error! Repository Not Found.");
     }
 
-    public String IOgetCommitMsg()
+    public String readCommitMsg()
     {
+        Boolean loop = true;
         System.out.println("insert commit massage: ");
-        String commitMsg = m_Scanner.nextLine();
-        return(commitMsg);
+        String commitMsg = EmptyString;
+
+        while (loop)
+        {
+            loop = false;
+            commitMsg = m_Scanner.nextLine();
+
+            if(!checkInputStringLen(commitMsg))
+            {
+                loop = true;
+                System.out.println(" Please insert message up to 50 characters:");
+            }
+        }
+
+        return commitMsg ;
     }
 
 

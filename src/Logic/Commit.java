@@ -8,16 +8,17 @@ import static Logic.ConstantsEnums.*;
 public class Commit {
 
         private String m_MainSHA1 = EmptyString;
-        private String m_PreviousSHA1 = null;
+        private String m_PreviousSHA1 = EmptyString;
+        private String m_PreviousSHA1merge = EmptyString;
         private String m_Message = EmptyString;
-        private String m_CreatedTime;
+        private String m_CreatedTime = EmptyString;
         private String m_CreatedBy = EmptyString;
 
         Commit(){
         }
 
-        Commit(String i_CommitDescription){
-                String CommitString[] = i_CommitDescription.split(", ");
+        Commit(String i_CommitDescription){   // add m_PreviousSHA1merge
+                String CommitString[] = i_CommitDescription.split(Separator);
                 m_MainSHA1 = CommitString[0];
                 m_PreviousSHA1 = CommitString[1];
                 m_Message = CommitString[2];
@@ -45,6 +46,10 @@ public class Commit {
                 this.m_PreviousSHA1 = m_PreviousSHA1;
         }
 
+        public void setM_PreviousSHA1merge(String m_PreviousSHA1merge) {
+                this.m_PreviousSHA1merge = m_PreviousSHA1merge;
+        }
+
         public String getM_MainSHA1() {
                 return m_MainSHA1;
         }
@@ -67,6 +72,9 @@ public class Commit {
 
         @Override
         public String toString() {
-                return m_MainSHA1 + ", " + m_PreviousSHA1 + ", " + m_Message + ", " + m_CreatedTime + ", " + m_CreatedBy;
+                return m_MainSHA1 + Separator + m_PreviousSHA1 + Separator
+                        + m_Message + Separator + m_CreatedTime + Separator + m_CreatedBy;
         }
+
+
 }
