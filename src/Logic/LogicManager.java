@@ -73,16 +73,14 @@ public class LogicManager {
     private String getRootFolderName()
     {
         final File repoFile = new File(m_ActiveRepository);
-        if(repoFile.listFiles().length > 2)
-        for(File f : repoFile.listFiles())
-        {
-            if(f.getName() != ".magit")
-            {
-                return f.getName();
+        if(repoFile.listFiles().length == 2) {
+            for (File f : repoFile.listFiles()) {
+                if (!f.getName().equals(".magit")) {
+                    return f.getName();
+                }
             }
         }
-
-        return "";
+        return "ERROR";
     }
 
     public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File) {
@@ -365,7 +363,6 @@ public class LogicManager {
                 System.out.println("Branch Message: " + branchCommit.getM_Message() + System.lineSeparator());
             }
         }
-
     }
     /* Case 7 */
     /* Show All Branches -- Start */
