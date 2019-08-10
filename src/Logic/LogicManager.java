@@ -1,9 +1,6 @@
 package Logic;
 
-import Logic.Objects.Blob;
-import Logic.Objects.BlobData;
-import Logic.Objects.Commit;
-import Logic.Objects.Folder;
+import Logic.Objects.*;
 import Zip.ZipFile;
 import org.apache.commons.codec.digest.DigestUtils;
 import java.io.File;
@@ -12,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -300,36 +298,32 @@ public class LogicManager {
 
     /* Show current commit file system information -- Start */
     /* Case 4 */
-    public void showLastCommit()
+    public List<BlobData> showLastCommit()
     {
-        String branchLastCommitName = getBranchActiveName();
-        m_ZipFile.unZipIt(getPathFolder("branches") + File.separator + branchLastCommitName + ".zip",getPathFolder("branches"));
-        Commit lastCommit = new Commit(getContentOfFile(new File(getPathFolder("branches") + File.separator + branchLastCommitName + ".txt")));
-        String MainRepositorySha1 = lastCommit.getM_MainSHA1();
-        System.out.println("Full Path:      " + getM_ActiveRepository());
-        System.out.println("File Type:      " + "Folder");
-        System.out.println("Sha1:           " + MainRepositorySha1);
-        System.out.println("Last Change By: " + lastCommit.getM_CreatedBy());
-        System.out.println("When Changed  : " + lastCommit.getM_CreatedTime());
+        List<BlobData> blobDataArr= new ArrayList<>();
+        String activeBranchName = getBranchActiveName();
+        String commitName = getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
+        Commit lastCommit = new Commit(getContentOfZipFile(getPathFolder("Objects"),commitName));
 
-        showRecursiveLastCommit(MainRepositorySha1,true,getM_ActiveRepository()+File.separator);
+        blobDataArr.add(new BlobData(m_ActiveRepository, lastCommit.getM_MainSHA1(), FileType.FOLDER,
+                                     lastCommit.getM_CreatedBy(), lastCommit.getM_CreatedTime()));
+
+        showRecursiveLastCommit(blobDataArr, lastCommit.getM_MainSHA1(),true,getM_ActiveRepository()+File.separator);
+
+       return blobDataArr;
     }
-    private void showRecursiveLastCommit(String i_Sha1,Boolean isFolder,String i_FullPath) {
+    private void showRecursiveLastCommit(List<BlobData> i_BlobDataArr, String i_Sha1,Boolean isFolder,String i_FullPath) {
         String fileSha1Content = getContentOfZipFile(getPathFolder("Objects"),i_Sha1);
         //BlobData fileBlob = new BlobData(fileSha1Content);
         if (isFolder) {
             String []dataFileFolder = fileSha1Content.split("~");
             for (String datafile : dataFileFolder) {
-                BlobData datablob = new BlobData(datafile);
 
-                System.out.println("Full Path:      " + i_FullPath + datablob.getM_Name());
-                System.out.println("File Type:      " + datablob.getM_Type());
-                System.out.println("Sha1:           " + datablob.getM_Sha1());
-                System.out.println("Last Change By: " + datablob.getM_ChangedBy());
-                System.out.println("When Changed  : " + datablob.getM_Date());
+                BlobData blobData = new BlobData(datafile);
+                i_BlobDataArr.add(blobData);
 
-                if (datablob.getM_Type() == FileType.FOLDER) {
-                    showRecursiveLastCommit(datablob.getM_Sha1(), true, i_FullPath + datablob.getM_Name() + File.separator);
+                if (blobData.getM_Type() == FileType.FOLDER) {
+                    showRecursiveLastCommit(i_BlobDataArr, blobData.getM_Sha1(), true, i_FullPath + blobData.getM_Name() + File.separator);
                 }
             }
         }
@@ -374,28 +368,25 @@ public class LogicManager {
 
     /* Show All Branches -- Start */
     /* Case 7 */
-    public void showAllBranches()
-    {
-        File branchesNamesFile = new File (getPathFolder("branches")+ File.separator + "NAMES.txt");
+    public List<BranchData> GetAllBranchesDetails() {
+        File branchesNamesFile = new File(getPathFolder("branches") + File.separator + "NAMES.txt");
+        List<BranchData> branchDataList = new ArrayList<>();
 
         String[] branchesNamesArray = getContentOfFile(branchesNamesFile).split(System.lineSeparator());
-        for(String branchName : branchesNamesArray)
-        {
 
-            String path = getPathFolder("branches")+ File.separator + branchName + ".zip";
-            System.out.println(path);
-            Path pathPaths = Paths.get(path);
-            if(Files.exists(pathPaths)) {
-                String branchSha1 = getContentOfZipFile(getPathFolder("branches"), branchName);
-                Commit branchCommit = new Commit(getContentOfZipFile(getPathFolder("Objects"), branchSha1));
-                System.out.println("Branch Name:    " + branchName);
-                if (getBranchActiveName().equals(branchName))
-                    System.out.print(" (Active Branch");
-                System.out.println("------------------------------");
-                System.out.println("Branch Sha1:    " + branchSha1);
-                System.out.println("Branch Message: " + branchCommit.getM_Message() + System.lineSeparator());
+        for (String branchName : branchesNamesArray) {
+            Path branchPath = Paths.get(getPathFolder("branches") + File.separator + branchName+".txt");
+
+            if (Files.exists(branchPath)) {
+                String commitSha1 = getContentOfFile(new File(getPathFolder("branches"), branchName+".txt"));
+                Commit commit = new Commit(getContentOfZipFile(getPathFolder("Objects"), commitSha1));
+
+                branchDataList.add(new BranchData(branchName, getBranchActiveName().equals(branchName),
+                        commitSha1, commit.getM_Message()));
+
             }
         }
+        return branchDataList;
     }
     /* Case 7 */
     /* Show All Branches -- Start */

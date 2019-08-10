@@ -40,7 +40,7 @@ public class Engine
                 break;
 
             case "4": //Show current commit file system information
-                m_LogicManager.showLastCommit();
+                m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
                 break;
 
             case "5": //Working copy status
@@ -52,7 +52,7 @@ public class Engine
                 break;
 
             case "7": //List available branches
-                m_LogicManager.showAllBranches();
+                m_InputManager.PrintAllBranches(m_LogicManager.GetAllBranchesDetails());
 
                 break;
 
