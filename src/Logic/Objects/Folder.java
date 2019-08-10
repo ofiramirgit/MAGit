@@ -9,17 +9,30 @@ import static Logic.ConstantsEnums.EmptyString;
 public class Folder
 {
     private List<BlobData> LibraryFiles;
+    private Boolean rootFolder = false;
+
 
     public void setLibraryFiles(List<BlobData> libraryFiles) {
         LibraryFiles = libraryFiles;
     }
 
-    private Boolean rootFolder = false;
+    public List<BlobData> getLibraryFiles() {
+        return LibraryFiles;
+    }
 
     public Folder() {
         LibraryFiles = new ArrayList<BlobData>();
     }
 
+    public Folder(String i_FolderContent)
+    {
+        String[] blobDataStrings = i_FolderContent.split(" ~ ");
+        LibraryFiles = new ArrayList<BlobData>();
+        for(String blobData : blobDataStrings)
+        {
+            LibraryFiles.add(new BlobData(blobData));
+        }
+    }
     public void setRootFolder(Boolean rootFolder) {
         this.rootFolder = rootFolder;
     }

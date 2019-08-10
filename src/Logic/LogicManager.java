@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Date;
+import java.util.List;
 
 
 import static Logic.ConstantsEnums.*;
@@ -39,6 +40,38 @@ public class LogicManager {
 
 
 
+    public void spreadCommitToWc(String i_BranchName) {
+        File BranchFile = new File(getPathFolder("branches") + File.separator + i_BranchName + ".txt");
+        if (BranchFile.exists()) {
+            String sha1OfLastCommitBranch = getContentOfFile(BranchFile);
+            Commit commit = new Commit(getContentOfZipFile(getPathFolder("Objects"),sha1OfLastCommitBranch));
+            String RootFolderSha1 = commit.getM_MainSHA1();
+            String path = m_ActiveRepository +File.separator + "Repo2";
+            buildingRepository(path,RootFolderSha1,FileType.FOLDER);
+
+        }
+    }
+    public void buildingRepository(String path,String Sha1,FileType i_FileType) {
+        if (i_FileType == FileType.FOLDER) {
+            File pathFile = new File(path);
+            pathFile.mkdir();
+            Folder folder = new Folder(getContentOfZipFile(getPathFolder("Objects"), Sha1));
+            List<BlobData> BlobDataArray = folder.getLibraryFiles();
+            for (BlobData blobData : BlobDataArray) {
+                buildingRepository(path + File.separator + blobData.getM_Name(), blobData.getM_Sha1(),blobData.getM_Type());
+            }
+        } else {
+            Path pathFile = Paths.get(path);
+            try {
+                Files.createFile(pathFile);
+                Files.write(pathFile,getContentOfZipFile(getPathFolder("Objects"),Sha1).getBytes());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 
     public void initRepository(String i_RepositoryArgs[]) {
         Path repositoryPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "Objects");

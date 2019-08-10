@@ -67,6 +67,7 @@ public class Engine
                 break;
 
             case "10": //Check out Head branch
+                m_LogicManager.spreadCommitToWc("master");
                 break;
 
             case "11": //Show current branch history
