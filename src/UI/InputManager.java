@@ -1,5 +1,7 @@
 package UI;
 
+import Logic.InputValidation;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
@@ -9,41 +11,17 @@ import static Logic.ConstantsEnums.NameLength;
 import static UI.Menu.MENU_OPTIONS;
 
 public class InputManager {
+
     private Scanner m_Scanner = new Scanner(System.in);
+    private InputValidation m_InputValidation = new InputValidation();
 
-    public Integer GetNextMenuOption()
+    public String GetNextMenuOption()
     {
-        String stringOption = EmptyString;
-       Integer option = 0;
-       Boolean loop = true;
-
-       while(loop)
-       {
-           loop = false;
-           stringOption = m_Scanner.nextLine();
-
-           try
-           {
-               option = Integer.parseInt(stringOption);
-
-               if((option < -1 || option >= MENU_OPTIONS) || option == 0)
-               {
-                   loop = true;
-                   System.out.println("Illegal Choice.");
-                   System.out.println("Please choose option from the menu:");
-               }
-           }
-           catch (Exception e)
-           {
-               loop = true;
-               System.out.println("Please enter a number from the menu:");
-           }
-
-       }
-
-       return option;
+        return m_Scanner.nextLine();
     }
 
+
+    /*case 1 - change user name - Start*/
     public String readActiveUserName()
     {
         Boolean loop = true;
@@ -55,24 +33,34 @@ public class InputManager {
            loop = false;
            userName = m_Scanner.nextLine();
 
-           if(!checkInputStringLen(userName))
+           if(!m_InputValidation.checkInputStringLen(userName))
            {
                loop = true;
-               System.out.println(" Please insert user name up to 50 characters:");
+               System.out.println("Please insert user name up to 50 characters:");
            }
        }
-
         return userName;
     }
 
-    private Boolean checkInputStringLen(String i_String)
+    /*case 1 - change user name - End*/
+
+    /*case 3 - switch repository - Start*/
+    public String getInputActiveRepository()
     {
-        if(i_String.length() == 0 || i_String.length() > 50)
-        {
-         return false;
+        Boolean loop = true;
+        String activeRepository = EmptyString;
+        System.out.println("insert Repository Full Path: ");
+        while(loop) {
+            loop = false;
+            activeRepository = m_Scanner.nextLine();
+            if (!m_InputValidation.checkInputActiveRepository(activeRepository)) {
+                loop = true;
+                System.out.println("Repository Not Found");
+            }
         }
-        return true;
+        return activeRepository;
     }
+    /*case 3 - switch repository - End*/
 
     public String[] IOinitRepository()
     {
@@ -82,12 +70,6 @@ public class InputManager {
         System.out.println("insert Repository Name:");
         repositoryArgs[1] = m_Scanner.nextLine();
         return repositoryArgs;
-    }
-
-    public String getInputActiveRepository()
-    {
-        System.out.println("insert Repository Full Path:");
-        return m_Scanner.nextLine();
     }
 
     public void printActiveRepositoryNotFound()
@@ -106,13 +88,12 @@ public class InputManager {
             loop = false;
             commitMsg = m_Scanner.nextLine();
 
-            if(!checkInputStringLen(commitMsg))
+            if(!m_InputValidation.checkInputStringLen(commitMsg))
             {
                 loop = true;
-                System.out.println(" Please insert message up to 50 characters:");
+                System.out.println("Please insert message up to 50 characters:");
             }
         }
-
         return commitMsg ;
     }
 

@@ -1,4 +1,4 @@
-package Logic;
+package Logic.Objects;
 import  java.lang.*;
 
 import static Logic.ConstantsEnums.*;

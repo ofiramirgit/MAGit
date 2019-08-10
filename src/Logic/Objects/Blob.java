@@ -1,4 +1,4 @@
-package Logic;
+package Logic.Objects;
 import static Logic.ConstantsEnums.EmptyString;
 
 public class Blob

@@ -1,4 +1,4 @@
-package Logic;
+package Logic.Objects;
 import java.util.*;
 
 import static Logic.ConstantsEnums.*;
@@ -14,10 +14,10 @@ public class Commit {
         private String m_CreatedTime = EmptyString;
         private String m_CreatedBy = EmptyString;
 
-        Commit(){
+        public Commit(){
         }
 
-        Commit(String i_CommitDescription){   // add m_PreviousSHA1merge
+        public Commit(String i_CommitDescription){   // add m_PreviousSHA1merge
                 String CommitString[] = i_CommitDescription.split(Separator);
                 m_MainSHA1 = CommitString[0];
                 m_PreviousSHA1 = CommitString[1];

@@ -1,5 +1,7 @@
 package Logic;
 
+import Logic.Objects.Branch;
+
 import java.util.ArrayList;
 import java.util.List;
 

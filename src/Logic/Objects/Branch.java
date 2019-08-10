@@ -1,4 +1,4 @@
-package Logic;
+package Logic.Objects;
 
 public class Branch {
     private String name;

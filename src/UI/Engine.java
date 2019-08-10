@@ -21,68 +21,72 @@ public class Engine
         }
     }
 
-    private void execute(Integer i_Option)
+    private void execute(String i_Option)
     {
         switch(i_Option){
-            case -1:
+            case "-1":
                // m_LogicManager.TESTING_CHANGING_BRANCH(m_InputManager.IOsetActiveUser());
 
-            case 1: //Change username
+            case "1": //Change username - Finished
                 m_LogicManager.setM_ActiveUser(m_InputManager.readActiveUserName());
                 break;
 
-            case 2://Load from XML
+            case "2"://Load from XML
                 //m_LogicManager.readXML();
                 break;
 
-            case 3://Switch repository
-                if(!m_LogicManager.setM_ActiveRepository(m_InputManager.getInputActiveRepository()))
-                    m_InputManager.printActiveRepositoryNotFound();
+            case "3"://Switch repository - Finished
+                m_LogicManager.setM_ActiveRepository(m_InputManager.getInputActiveRepository());
                 break;
 
-            case 4: //Show current commit file system information
+            case "4": //Show current commit file system information
                 m_LogicManager.showLastCommit();
                 break;
 
-            case 5: //Working copy status
+            case "5": //Working copy status
                 //m_LogicManager.WorkingCopyStatus();
                 break;
 
-            case 6://Commit
+            case "6"://Commit
                 m_LogicManager.createCommit(m_InputManager.readCommitMsg());
                 break;
 
-            case 7: //List available branches
+            case "7": //List available branches
                 m_LogicManager.showAllBranches();
 
                 break;
 
-            case 8://Create new branch
+            case "8"://Create new branch
                 if(!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
                     m_InputManager.printBranchNameExist();
                 break;
 
-            case 9: //Check out branch
+            case "9": //Check out branch
                 if(!m_LogicManager.deleteBranch(m_InputManager.getInputBranchNameToDelete()))
                     m_InputManager.printBranchNameIsActive();
                 break;
 
-            case 10: //Check out Head branch
+            case "10": //Check out Head branch
                 break;
 
-            case 11: //Show current branch history
+            case "11": //Show current branch history
                 m_LogicManager.historyOfActiveBranch();
                 break;
 
-            case 12: //Exit
+            case "12": //Exit
                     m_IsRunning = false;//Bonus 1
                 break;
 
-            case 13: //Bonus1
+            case "13": //Bonus1
                 String repositoryArgs[];
                 repositoryArgs = m_InputManager.IOinitRepository();
                 m_LogicManager.initRepository(repositoryArgs);
                 break;
+            default:
+                System.out.println("Invalid Input please selcet number between 1-13.");
+                break;
+
+
         }
     }
 }
