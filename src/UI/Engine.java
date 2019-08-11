@@ -44,7 +44,7 @@ public class Engine
                 break;
 
             case "5": //Working copy status
-                //m_LogicManager.WorkingCopyStatus();
+                m_LogicManager.ShowWorkingCopyStatus();
                 break;
 
             case "6"://Commit

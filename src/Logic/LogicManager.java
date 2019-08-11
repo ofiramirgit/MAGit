@@ -9,9 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 import static Logic.ConstantsEnums.*;
@@ -22,12 +20,14 @@ public class LogicManager {
     private String m_ActiveUser;
     private String m_ActiveRepository;
     private ZipFile m_ZipFile;
+    private Map<String,String> m_CurrentCommitStateMap;
 
     public LogicManager()
     {
         m_ActiveUser = "Administrator";
         m_ActiveRepository = EmptyString;
         m_ZipFile = new ZipFile();
+        m_CurrentCommitStateMap = new HashMap<>();
     }
 
     public String getM_ActiveRepository() {
@@ -132,10 +132,13 @@ public class LogicManager {
                     );
             m_ZipFile.zipFile(i_FolderToZipInto,sha1, folder.printArray());
             return directoryBlob;
-        } else {
+        }
+        else { //isFile
             Blob blob = new Blob(getContentOfFile(i_File));
-
             sha1 = DigestUtils.sha1Hex(blob.getM_Data());
+
+            m_CurrentCommitStateMap.put(i_File.getAbsolutePath(),sha1);
+
             m_ZipFile.zipFile(i_FolderToZipInto,sha1, getContentOfFile(i_File));
             BlobData newBlobData = new BlobData(i_File.getName(), sha1, ConstantsEnums.FileType.FILE,
                             m_ActiveUser, dateFormat.format(new Date()));
@@ -180,9 +183,6 @@ public class LogicManager {
 
 
 
-
-
-
     public void TESTING_CHANGING_BRANCH(String branchName) {
         File activeBranchFile = new File(getPathFolder("branches") + File.separator + "HEAD.txt");
         activeBranchFile.delete();
@@ -197,82 +197,6 @@ public class LogicManager {
 
 
 
-
-
-
-
-
-    /*public void WorkingCopyStatus()
-    {
-        final File rootFolderFile = new File(m_ActiveRepository);
-        String folderToZipInto = getPathFolder("WcCommit");
-        BlobData rootBlobData = recursiveTravelFolders(folderToZipInto,rootFolderFile);
-        m_zipFile.zipFile(getPathFolder("WcCommit"),rootBlobData.getM_Sha1(), rootBlobData.toString());
-        getLastCommitStructure();//throw all commit to file lastCommit
-        List<ChangedStateFiles> listChangedStateFiles = getListOfChangedStateFiles(rootBlobData.getM_Sha1(),getSha1OfMainRepositoryFromLastCommit());
-        listChangedStateFiles.toString();
-        //then check every one of the file if it's equals
-    }
-
-    private List <ChangedStateFiles> getListOfChangedStateFiles(String i_Sha1_WC, String i_Sha1_LastCommit) {
-        List <ChangedStateFiles> listChangedStateFiles = new ArrayList<ChangedStateFiles>();
-        String path = m_ActiveRepository;
-        recursiveTravelChanged(listChangedStateFiles,path,i_Sha1_WC,FileType.FOLDER);
-        return listChangedStateFiles;
-    }
-
-    public void getLastCommitStructure() {
-        String Sha1OfMainRepositoryCommit = getSha1OfMainRepositoryFromLastCommit();
-        buildLastByRecursive(Sha1OfMainRepositoryCommit, ConstantsEnums.FileType.FOLDER);
-    }
-
-    public void buildLastByRecursive(String i_Sha1, ConstantsEnums.FileType i_FileType)
-    {
-        if(!i_Sha1.equals("NONE")) {
-            if (i_FileType == ConstantsEnums.FileType.FOLDER) {
-                String FileSha1ZipedContent = getContentOfZipFile(getPathFolder("objects"), i_Sha1);
-                copyPasteFile(getPathFolder("objects") + File.separator + i_Sha1 + ".zip", getPathFolder("lastCommit") + File.separator + i_Sha1 + ".zip");
-                List<BlobData> blobDataList = getBlobsDataOfDirectory(FileSha1ZipedContent);
-                for (BlobData blobData : blobDataList)
-                    buildLastByRecursive(blobData.getM_Sha1(), blobData.getM_Type());
-            } else {
-                copyPasteFile(getPathFolder("objects") + File.separator + i_Sha1 + ".zip", getPathFolder("lastCommit") + File.separator + i_Sha1 + ".zip");
-            }
-        }
-    }
-
-        private void recursiveTravelChanged(List<ChangedStateFiles> listChangedStateFiles,
-                                        String path, String i_sha1_wc, FileType typeofFile) {
-
-
-        String FileSha1ZipedContent = getContentOfZipFile(getPathFolder("WcCommit"),i_sha1_wc);
-        if(typeofFile == FileType.FOLDER)
-        {
-            List<BlobData> blobDataList =  getBlobsDataOfDirectory(FileSha1ZipedContent);
-            for(BlobData blobData : blobDataList)
-                recursiveTravelChanged(listChangedStateFiles,blobData.getM_Name(), blobData.getM_Sha1(),blobData.getM_Type());
-        }
-        else
-        {
-            Path inCommitFilePath = Paths.get(getPathFolder("lastCommit") + File.separator + i_sha1_wc + ".zip");
-            if(!Files.exists(inCommitFilePath))
-            {
-                listChangedStateFiles.add(new ChangedStateFiles(path,FileState.CHANGED));
-            }
-
-        }
-
-    }
-
-    public List<BlobData> getBlobsDataOfDirectory(String i_ContentOfFile) {
-        List<BlobData> directoryBlobDatas = new ArrayList<BlobData>();
-        String[] seperatedContentDirectory = i_ContentOfFile.split(" ~ ");
-        for (String ContentOfBlobData : seperatedContentDirectory) {
-            directoryBlobDatas.add(new BlobData(ContentOfBlobData));
-        }
-        return directoryBlobDatas;
-    }
-    */
 
     /* Change username -- Start */
     /* Case 1 */
@@ -325,10 +249,79 @@ public class LogicManager {
     /* Case 4 */
     /* Show current commit file system information -- End */
 
+    /* Case 5 */
+    /* ShowWorkingCopyStatus -- start */
+
+    public void ShowWorkingCopyStatus()
+    {
+        Set<String> deletedFilesList;
+        List<String> changedFilesList = new ArrayList<>();
+        List<String> newFilesList = new ArrayList<>();
+        String rootFolderName = getRootFolderName();
+
+        deletedFilesList = m_CurrentCommitStateMap.keySet();
+
+        recursiveCompareWC(m_ActiveRepository,rootFolderName,deletedFilesList, changedFilesList, newFilesList);
+
+        System.out.println("deleted");
+        for (String s : deletedFilesList)
+        {
+            System.out.println(s);
+        }
+
+        System.out.println("changed");
+        for (String s : changedFilesList)
+        {
+            System.out.println(s);
+        }
+
+        System.out.println("new");
+        for (String s : newFilesList)
+        {
+            System.out.println(s);
+        }
+    }
+
+    private void recursiveCompareWC(String stringPath, String fName, Set<String> deletedFilesList, List<String> changedFilesList,List<String> newFilesList)
+    {
+        File file = new File(stringPath + File.separator + fName);
+
+        if(file.isDirectory())
+        {
+            for(File f : file.listFiles())
+            {
+                recursiveCompareWC(file.getAbsolutePath(), f.getName(),deletedFilesList, changedFilesList, newFilesList);
+            }
+        }
+        else // isFile
+        {
+            String sha1InCommit = m_CurrentCommitStateMap.get(file.getAbsolutePath());
+            String sha1InWC = DigestUtils.sha1Hex(getContentOfFile(file));
+
+            deletedFilesList.remove(file.getAbsolutePath());
+
+            if(sha1InCommit == null)
+            {
+                newFilesList.add(file.getAbsolutePath());
+            }
+             else if(!sha1InCommit.equals(sha1InWC))
+            {
+                changedFilesList.add(file.getAbsolutePath());
+            }
+
+        }
+    }
+
+
+    /* Case 5 */
+    /* ShowWorkingCopyStatus -- End */
+
+
     /* Create Commit -- Start */
     /* Case 6 */
     public void createCommit(String i_Msg)
     {
+        m_CurrentCommitStateMap.clear();
         String objectFolder;
 
         //build the commit object
@@ -475,7 +468,7 @@ public class LogicManager {
     public String getContentOfFile(File i_File) {
         String fileContent = EmptyString;
         Path path = Paths.get(i_File.getAbsolutePath());
-        System.out.println(path + "\n");
+
         try {
             fileContent = new String(Files.readAllBytes(path));
         } catch (IOException ex) {
