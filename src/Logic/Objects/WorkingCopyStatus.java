@@ -34,4 +34,11 @@ public class WorkingCopyStatus
     public void setM_NewFilesList(List<String> m_NewFilesList) {
         this.m_NewFilesList = m_NewFilesList;
     }
+
+    public Boolean isChanged()
+    {
+        if(m_ChangedFilesList.size()==0 && m_NewFilesList.size()==0 && m_DeletedFilesList.isEmpty())
+            return false;
+        return true;
+    }
 }

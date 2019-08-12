@@ -91,8 +91,6 @@ public class InputManager {
             System.out.println("Changed At: " + bd.getM_Date());
             System.out.println();
         }
-
-
     }
     /*case 4 - show commit details - End*/
 

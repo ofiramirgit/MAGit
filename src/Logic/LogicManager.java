@@ -124,7 +124,8 @@ public class LogicManager {
         String activeBranchName = getBranchActiveName();
         Path activeBranchPath = Paths.get(getPathFolder("branches") + File.separator + activeBranchName + ".txt");
        try{
-           Files.createFile(activeBranchPath);
+           if(!Files.exists(activeBranchPath))
+               Files.createFile(activeBranchPath);
            Files.write(activeBranchPath,i_CommitSha1.getBytes());
        }
        catch (Exception e)
@@ -219,7 +220,7 @@ public class LogicManager {
     /* Show current commit file system information -- End */
 
     /* Case 5 */
-    /* ShowWorkingCopyStatus -- start */
+    /* ShowWorkingCopyStatus -- Start */
 
     public WorkingCopyStatus ShowWorkingCopyStatus()
     {
@@ -275,7 +276,6 @@ public class LogicManager {
         }
     }
 
-
     /* Case 5 */
     /* ShowWorkingCopyStatus -- End */
 
@@ -286,48 +286,55 @@ public class LogicManager {
     {
         m_CurrentCommitStateMap.clear();
         String objectFolder;
-
+        WorkingCopyStatus workingCopyStatus= ShowWorkingCopyStatus();
         //build the commit object
-        Commit newCommit = new Commit();
-        newCommit.setM_Message(i_Msg);
-        newCommit.setM_CreatedBy(m_ActiveUser);
-        newCommit.setM_PreviousSHA1("NONE");
-        newCommit.setM_PreviousSHA1merge("NONE");
-        newCommit.setM_CreatedTime(dateFormat.format(new Date()));
+        if(workingCopyStatus.isChanged()) {
+            Commit newCommit = new Commit();
+            newCommit.setM_Message(i_Msg);
+            newCommit.setM_CreatedBy(m_ActiveUser);
+            newCommit.setM_PreviousSHA1("NONE");
+            newCommit.setM_PreviousSHA1merge("NONE");
+            newCommit.setM_CreatedTime(dateFormat.format(new Date()));
 
-        String rootFolderName = getRootFolderName();
-        File rootFolderFile = new File(m_ActiveRepository + File.separator + rootFolderName);
-        File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
+            String rootFolderName = getRootFolderName();
+            File rootFolderFile = new File(m_ActiveRepository + File.separator + rootFolderName);
+            File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
+            //File branchCommit = new File(getPathFolder("branches")+File.separator+getBranchActiveName()+".txt");
 
-        try {
-            Files.write(Paths.get(commitStatusFile.getAbsolutePath()), "".getBytes() , StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                Files.write(Paths.get(commitStatusFile.getAbsolutePath()), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            objectFolder = getPathFolder("objects");
+
+            if (!isFirstCommit()) {
+                String PreviousSHA1 = getContentOfFile(new File(getPathFolder("branches"), getBranchActiveName() + ".txt"));
+                newCommit.setM_PreviousSHA1(PreviousSHA1);
+            } else {
+                //folderToZipInto = getPathFolder("WcCommit");
+            }
+            BlobData rootBlobData = recursiveTravelFolders(objectFolder, rootFolderFile,workingCopyStatus);//throw all the WC files to WcCommit folder
+            newCommit.setM_MainSHA1(rootBlobData.getM_Sha1());
+            String commitSha1 = DigestUtils.sha1Hex(newCommit.toString());
+            m_ZipFile.zipFile(objectFolder, commitSha1, newCommit.toString());
+            updateBranchActiveCommit(commitSha1);
         }
-
-        objectFolder = getPathFolder("objects");
-
-        if(!isFirstCommit()) {
-            String PreviousSHA1 = getContentOfZipFile(getPathFolder("branches"), getBranchActiveName());
-            newCommit.setM_PreviousSHA1(PreviousSHA1);
+        else
+        {
+            System.out.println("there is nothing to update.");
         }
-        else {
-            //folderToZipInto = getPathFolder("WcCommit");
-        }
-        BlobData rootBlobData = recursiveTravelFolders(objectFolder,rootFolderFile);//throw all the WC files to WcCommit folder
-        newCommit.setM_MainSHA1(rootBlobData.getM_Sha1());
-        String commitSha1 = DigestUtils.sha1Hex(newCommit.toString());
-        m_ZipFile.zipFile(objectFolder,commitSha1, newCommit.toString());
-        updateBranchActiveCommit(commitSha1);
     }
 
-    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File) {
+    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File,WorkingCopyStatus workingCopyStatus) {
         String sha1;
         if (i_File.isDirectory()) {
             Folder folder = new Folder();
 
             for (final File f : i_File.listFiles())
-                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f));
+                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f,workingCopyStatus));
 
             sha1 = DigestUtils.sha1Hex(folder.toString());
             BlobData directoryBlob =
@@ -358,7 +365,7 @@ public class LogicManager {
 
     private boolean isFirstCommit() {
         String BranchName = getBranchActiveName();
-        Path BranchCommit = Paths.get(getPathFolder("branches") + File.separator + BranchName + ".zip");
+        Path BranchCommit = Paths.get(getPathFolder("branches") + File.separator + BranchName + ".txt");
         return (!Files.exists(BranchCommit));
     }
 
@@ -370,7 +377,6 @@ public class LogicManager {
     public List<BranchData> GetAllBranchesDetails() {
         File branchesNamesFile = new File(getPathFolder("branches") + File.separator + "NAMES.txt");
         List<BranchData> branchDataList = new ArrayList<>();
-
         String[] branchesNamesArray = getContentOfFile(branchesNamesFile).split(System.lineSeparator());
 
         for (String branchName : branchesNamesArray) {
@@ -382,7 +388,6 @@ public class LogicManager {
 
                 branchDataList.add(new BranchData(branchName, getBranchActiveName().equals(branchName),
                         commitSha1, commit.getM_Message()));
-
             }
         }
         return branchDataList;
@@ -453,7 +458,7 @@ public class LogicManager {
     public void historyOfActiveBranch()
     {
         String activeBranchName = getBranchActiveName();
-        String activeBranchContent = getContentOfZipFile(getPathFolder("branches") ,activeBranchName);
+        String activeBranchContent = getContentOfFile(new File (getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
         recursiveShowHistoryOfCommits(activeBranchContent);
     }
     private void recursiveShowHistoryOfCommits(String i_CommitSha1) {
