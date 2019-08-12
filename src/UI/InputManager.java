@@ -4,6 +4,7 @@ import Logic.InputValidation;
 import Logic.Objects.BlobData;
 import Logic.Objects.BranchData;
 import Logic.Objects.Commit;
+import Logic.Objects.WorkingCopyStatus;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -94,6 +95,26 @@ public class InputManager {
 
     }
     /*case 4 - show commit details - End*/
+
+    /*case 5 - show commit details - Start*/
+
+    public void PrintWcStatus(WorkingCopyStatus i_WcStatus)
+    {
+        System.out.println("New Files:");
+        for(String fileFullName : i_WcStatus.getM_NewFilesList())
+            System.out.println(fileFullName);
+
+        System.out.println("Modified Files:");
+        for(String fileFullName : i_WcStatus.getM_ChangedFilesList())
+            System.out.println(fileFullName);
+
+        System.out.println("Deleted Files:");
+
+        for(String fileFullName : i_WcStatus.getM_DeletedFilesList())
+            System.out.println(fileFullName);
+    }
+
+    /*case 5 - show commit details - End*/
 
     /*case 7 - showAllBranches - Start*/
     public  void  PrintAllBranches(List<BranchData> i_BranchDataList) {
