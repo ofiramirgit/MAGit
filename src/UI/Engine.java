@@ -31,7 +31,7 @@ public class Engine
                 break;
 
             case "2"://Load from XML
-                //m_LogicManager.readXML();
+                m_LogicManager.readXML();
                 break;
 
             case "3"://Switch repository - Finished
@@ -39,46 +39,72 @@ public class Engine
                 break;
 
             case "4": //Show current commit file system information
-                m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
+                    m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "5": //Working copy status
-                m_InputManager.PrintWcStatus(m_LogicManager.ShowWorkingCopyStatus());
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
+                    m_InputManager.PrintWcStatus(m_LogicManager.ShowWorkingCopyStatus());
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "6"://Commit
-                m_LogicManager.createCommit(m_InputManager.readCommitMsg());
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
+                    m_LogicManager.createCommit(m_InputManager.readCommitMsg());
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "7": //List available branches
-                m_InputManager.PrintAllBranches(m_LogicManager.GetAllBranchesDetails());
-
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
+                    m_InputManager.PrintAllBranches(m_LogicManager.GetAllBranchesDetails());
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "8"://Create new branch
-                if(!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
-                    m_InputManager.printBranchNameExist();
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
+                    if (!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
+                        m_InputManager.printBranchNameExist();
+                }
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "9": //Check out branch
-                if(!m_LogicManager.deleteBranch(m_InputManager.getInputBranchNameToDelete()))
-                    m_InputManager.printBranchNameIsActive();
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
+                    if (!m_LogicManager.deleteBranch(m_InputManager.getInputBranchNameToDelete()))
+                        m_InputManager.printBranchNameIsActive();
+                }
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "10": //Check out Head branch
-                Boolean bool = false;
-                String Msg =EmptyString;
-                String BranchName = m_InputManager.getInputChangeBranch(m_LogicManager.getPathFolder("branches"));
-                if(m_LogicManager.WcChanged()) {
-                    bool = m_InputManager.WcOpenChanges();
-                    if(bool)
-                        Msg = m_InputManager.readCommitMsg();
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
+                    Boolean bool = false;
+                    String Msg = EmptyString;
+                    String BranchName = m_InputManager.getInputChangeBranch(m_LogicManager.getPathFolder("branches"));
+                    if (m_LogicManager.WcChanged()) {
+                        bool = m_InputManager.WcOpenChanges();
+                        if (bool)
+                            Msg = m_InputManager.readCommitMsg();
+                    }
+                    m_LogicManager.CheckOutHeadBranch(BranchName, bool, Msg);
                 }
-                m_LogicManager.CheckOutHeadBranch(BranchName,bool,Msg);
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "11": //Show current branch history
-                m_InputManager.printBranchHistoryCommits(m_LogicManager.historyOfActiveBranch());
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
+                    m_InputManager.printBranchHistoryCommits(m_LogicManager.historyOfActiveBranch());
+                else
+                    m_InputManager.printInsertRepository();
                 break;
 
             case "12": //Exit
@@ -93,8 +119,6 @@ public class Engine
             default:
                 System.out.println("Invalid Input please selcet number between 1-13.");
                 break;
-
-
         }
     }
 }

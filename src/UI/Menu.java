@@ -25,6 +25,6 @@ public class Menu {
     public void printInfoMenu(String i_CurrentUser, String i_RepositoryLocation) {
         System.out.println("Magit Menu      " +
                 "Current User: " + i_CurrentUser +
-                "       Current repository location " + i_RepositoryLocation);
+                "       Current repository location: " + i_RepositoryLocation);
     }
 }

@@ -213,4 +213,8 @@ public class InputManager {
             System.out.println("Created By  : " + commit.getM_CreatedBy() +System.lineSeparator());
         }
     }
+
+    public void printInsertRepository() {
+        System.out.println("Invalid! you have to select repository location (3).");
+    }
 }

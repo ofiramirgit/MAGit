@@ -1,49 +1,109 @@
-//package Logic;
-//import javax.xml.bind.JAXBContext;
-//import javax.xml.bind.JAXBException;
-//import javax.xml.bind.Unmarshaller;
-//import java.io.*;
-//import java.nio.charset.Charset;
-//import java.nio.file.Files;
-//import java.nio.file.Path;
-//import java.nio.file.Paths;
-//import java.util.List;
-//import java.util.zip.ZipEntry;
-//import java.util.zip.ZipOutputStream;
-//
-//import GeneratedXML.MagitRepository;
-//import org.apache.commons.codec.digest.DigestUtils;
-//
-//
-//public class XmlReader {
-//    private static final String JAXB_XML_GAME_PACKAGE_NAME = "GeneratedXML";
-//
-//    private InputStream inputStream = null;
-//    private MagitRepository magitRepository;
-//
-//    public XmlReader(String i_XMLLocation){
-//        try {
-//            inputStream = new FileInputStream(i_XMLLocation);
-//        }catch(FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void buildFromXML()
-//    {
-//        try {
-//        magitRepository = deserializeFrom(inputStream);
-//        }catch(JAXBException  e ) {
-//            e.printStackTrace();
-//        }
-//
-//        initRepository();
-//
-//        buildFromMagitRepository();
-//
-//        // BuildRepository(magitRepository);
-//    }
-//
+package Logic;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.ZipEntry;
+
+import Logic.Objects.Folder;
+import Zip.ZipFile;
+import java.util.zip.ZipOutputStream;
+
+import GeneratedXML.MagitRepository;
+import Logic.Objects.BlobData;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import static Logic.ConstantsEnums.dateFormat;
+
+
+public class XmlReader {
+    private static final String JAXB_XML_GAME_PACKAGE_NAME = "GeneratedXML";
+
+
+    private InputStream inputStream = null;
+    private MagitRepository magitRepository;
+    private ZipFile m_ZipFile;
+    private String m_Location;
+
+    public XmlReader(String i_XMLLocation){
+        try {
+            inputStream = new FileInputStream(i_XMLLocation);
+            try {
+                magitRepository = deserializeFrom(inputStream);
+                m_ZipFile = new Zip.ZipFile();
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
+
+        }catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+    private MagitRepository deserializeFrom(InputStream in) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
+        Unmarshaller u = jc.createUnmarshaller();
+        return (MagitRepository)u.unmarshal(in);
+    }
+    public void buildFromXML()
+    {
+            getActiveBranch();
+
+
+        //buildFromMagitRepository();
+
+        // BuildRepository(magitRepository);
+    }
+    public String[] getLocation() {
+
+        String[] RepositoryLocation = {magitRepository.getLocation(), magitRepository.getName()};
+        m_Location = RepositoryLocation[0] + File.separator + RepositoryLocation[1];
+        return RepositoryLocation;
+    }
+    public void getActiveBranch(){
+        for(MagitRepository.MagitBranches.MagitSingleBranch branch:magitRepository.getMagitBranches().getMagitSingleBranch()) {
+            //System.out.println(branch.getName() +" ~ " + branch.getPointedCommit().getId());
+            MagitRepository.MagitCommits.MagitSingleCommit commit = magitRepository.getMagitCommits().getMagitSingleCommit().get(branch.getPointedCommit().getId()-1);
+            System.out.println(commit.getRootFolder().getId());
+            buildRootFolder(commit.getRootFolder().getId(), ConstantsEnums.FileType.FOLDER);
+
+        }
+    }
+
+    private BlobData buildRootFolder(Byte id, ConstantsEnums.FileType fileType) {
+        String sha1;
+        if (fileType == ConstantsEnums.FileType.FOLDER) {
+            Folder folder = new Folder();
+            MagitRepository.MagitFolders.MagitSingleFolder MagitFolder = magitRepository.getMagitFolders().getMagitSingleFolder().get(id - 1);
+            for(MagitRepository.MagitFolders.MagitSingleFolder.Items.Item itemFolder : MagitFolder.getItems().getItem())
+            {
+                if(itemFolder.getType().equals("blob"))
+                    folder.AddNewItem(buildRootFolder(itemFolder.getId(), ConstantsEnums.FileType.FILE));
+                else
+                    folder.AddNewItem(buildRootFolder(itemFolder.getId(), ConstantsEnums.FileType.FOLDER));
+            }
+            sha1 = DigestUtils.sha1Hex(folder.toString());
+            BlobData directoryBlob =
+                    new BlobData(MagitFolder.getName(), sha1, ConstantsEnums.FileType.FOLDER,
+                            MagitFolder.getLastUpdater(), MagitFolder.getLastUpdateDate());
+            m_ZipFile.zipFile(m_Location + File.separator + ".magit" + File.separator + "objects",sha1, folder.printArray());
+            return directoryBlob;
+        }
+        else
+        {
+            MagitRepository.MagitBlobs.MagitBlob blob = magitRepository.getMagitBlobs().getMagitBlob().get(id - 1);
+            BlobData blobData = new BlobData(blob.getName(),DigestUtils.sha1Hex(blob.getContent()), ConstantsEnums.FileType.FILE,blob.getLastUpdater(),blob.getLastUpdateDate());
+            m_ZipFile.zipFile(m_Location + File.separator + ".magit" + File.separator + "objects",DigestUtils.sha1Hex(blob.getContent()),blob.getContent());
+            return blobData;
+        }
+    }
 //
 //    public void buildFromMagitRepository()
 //    {
@@ -144,11 +204,7 @@
 //    }
 //
 //
-//    private MagitRepository deserializeFrom(InputStream in) throws JAXBException {
-//        JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
-//        Unmarshaller u = jc.createUnmarshaller();
-//        return (MagitRepository)u.unmarshal(in);
-//    }
+
 //
 //    private void printRep(MagitRepository i_MagitRepository)
 //    {
@@ -204,22 +260,18 @@
 //        }
 //    }
 //
-//    private void initRepository() {
-//
-//        Path location = Paths.get( magitRepository.getLocation() + "\\" + magitRepository.getName() + "\\.magit");
-//
+
 //        Boolean dirExists = Files.exists(location);
 //        if (dirExists) {
-//
-//            System.out.println("Directory Alerady Exists");
+//            System.out.println("Repository Already Exists");
+//            System.out.println("Do you want to delete the the current and To Create new One by this File? or to continue with old repository?");
 //        } else {
 //            try {
-//                Files.createDirectories(location);
+//
 //            } catch (IOException ioExceptionObj) {
 //                System.out.println("Problem Occured While Creating The Directory Structure= " + ioExceptionObj.getMessage());
 //            }
 //        }
-//
-//    }
-//
-//}
+
+
+}

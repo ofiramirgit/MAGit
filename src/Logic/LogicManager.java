@@ -21,6 +21,7 @@ public class LogicManager {
     private String m_ActiveRepository;
     private ZipFile m_ZipFile;
     private Map<String,String> m_CurrentCommitStateMap;
+    private InputValidation m_InputValidation = new InputValidation();
 
     public LogicManager()
     {
@@ -83,20 +84,22 @@ public class LogicManager {
     }
 
     public void initRepository(String i_RepositoryArgs[]) {
-        Path RootPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
-        Path ObjectPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "objects");
-        Path branchesPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches");
-        Path activeBranchePath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches" + File.separator + "HEAD.txt");
-        Path branchesNamesPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches" + File.separator + "NAMES.txt");
-        Path rootFolderNamePath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "RootFolderName.txt");
-        Path commitStatusPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "CommitStatus.txt");
+        Path RepositoryPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
+        Path RootFolderPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + i_RepositoryArgs[1]);
+        Path ObjectPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "objects");
+        Path branchesPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "branches");
+        Path activeBranchePath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" +  File.separator + "branches" + File.separator + "HEAD.txt");
+        Path branchesNamesPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" +  File.separator + "branches" + File.separator + "NAMES.txt");
+        Path rootFolderNamePath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "RootFolderName.txt");
+        Path commitStatusPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "CommitStatus.txt");
 
         Boolean dirExists = Files.exists(ObjectPath);
         if (dirExists) {
             System.out.println("Directory Alerady Exists");
         } else {
             try {
-                Files.createDirectories(RootPath);
+                Files.createDirectories(RepositoryPath);
+                Files.createDirectories(RootFolderPath);
                 Files.createDirectories(ObjectPath);
                 Files.createDirectories(branchesPath);
                 Files.createFile(activeBranchePath);
@@ -115,8 +118,7 @@ public class LogicManager {
 
     public String getRootFolderName()
     {
-        String rootFolder = EmptyString;
-        rootFolder = getContentOfFile(new File(getPathFolder(".magit") + File.separator + "RootFolderName.txt"));
+        String rootFolder = getContentOfFile(new File(getPathFolder(".magit") + File.separator + "RootFolderName.txt"));
         return rootFolder;
     }
 
@@ -136,39 +138,6 @@ public class LogicManager {
 
        }
     }
-
-
-    public String getSha1OfMainRepositoryFromLastCommit()
-    {
-        String branchLastCommitName = getBranchActiveName();
-        Path path = Paths.get(getPathFolder("branches") + File.separator + branchLastCommitName + ".zip");
-        if(Files.exists(path)) {
-            m_ZipFile.unZipIt(getPathFolder("branches") + File.separator + branchLastCommitName + ".zip", getPathFolder("branches"));
-            File unZippedFile = new File(getPathFolder("branches") + File.separator + branchLastCommitName + ".txt");
-            String lastCommitContent = getContentOfFile(unZippedFile);
-            unZippedFile.delete();
-            Commit lastCommit = new Commit(lastCommitContent);
-            return (lastCommit.getM_MainSHA1());
-        }
-        else
-            return "NONE";
-    }
-
-
-
-    public void TESTING_CHANGING_BRANCH(String branchName) {
-        File activeBranchFile = new File(getPathFolder("branches") + File.separator + "HEAD.txt");
-        activeBranchFile.delete();
-        Path path = Paths.get(getPathFolder("branches")+ File.separator + "HEAD.txt");
-        try {
-            Files.write(path, branchName.getBytes(), StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
 
 
     /* Change username -- Start */
@@ -561,16 +530,20 @@ public class LogicManager {
 
     public boolean WcChanged() {
         WorkingCopyStatus workingCopyStatus = ShowWorkingCopyStatus();
-        if(workingCopyStatus.isChanged())
+        if (workingCopyStatus.isChanged())
             return true;
         return false;
     }
-}
 
- /*public void readXML()
+    public void readXML()
     {
-//        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
-//        xmlReader.buildFromXML();
+        XmlReader xmlReader = new XmlReader("src\\Resourses\\ex1-small.xml");
+        String[] RepositoryLocation = xmlReader.getLocation();
+        if(!m_InputValidation.checkInputActiveRepository(RepositoryLocation[0] + File.separator + RepositoryLocation[1]))
+            initRepository(RepositoryLocation);
+        else
+            System.out.println("Repository Exist!");
+        xmlReader.buildFromXML();
     }
 }
-*/
+
