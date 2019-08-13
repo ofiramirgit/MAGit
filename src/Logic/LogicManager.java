@@ -86,13 +86,10 @@ public class LogicManager {
         Path RootPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
         Path ObjectPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "objects");
         Path branchesPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches");
-//        Path WcCommitPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "WcCommit");
-//        Path lastCommitPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "lastCommit");
         Path activeBranchePath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches" + File.separator + "HEAD.txt");
         Path branchesNamesPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "branches" + File.separator + "NAMES.txt");
         Path rootFolderNamePath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "RootFolderName.txt");
         Path commitStatusPath = Paths.get(i_RepositoryArgs[0] + File.separator + ".magit" + File.separator + "CommitStatus.txt");
-        //        Path repositoryWC = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
 
         Boolean dirExists = Files.exists(ObjectPath);
         if (dirExists) {
@@ -100,11 +97,8 @@ public class LogicManager {
         } else {
             try {
                 Files.createDirectories(RootPath);
-
                 Files.createDirectories(ObjectPath);
                 Files.createDirectories(branchesPath);
-
-//                Files.createDirectories(repositoryWC);
                 Files.createFile(activeBranchePath);
                 Files.createFile(branchesNamesPath);
                 Files.createFile(rootFolderNamePath);
@@ -211,7 +205,6 @@ public class LogicManager {
     }
     private void showRecursiveLastCommit(List<BlobData> i_BlobDataArr, String i_Sha1,Boolean isFolder,String i_FullPath) {
         String fileSha1Content = getContentOfZipFile(getPathFolder("objects"),i_Sha1);
-        //BlobData fileBlob = new BlobData(fileSha1Content);
         if (isFolder) {
             String []dataFileFolder = fileSha1Content.split("~");
             for (String datafile : dataFileFolder) {
@@ -305,7 +298,6 @@ public class LogicManager {
             String rootFolderName = getRootFolderName();
             File rootFolderFile = new File(m_ActiveRepository + File.separator + rootFolderName);
             File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
-            //File branchCommit = new File(getPathFolder("branches")+File.separator+getBranchActiveName()+".txt");
 
             try {
                 Files.write(Paths.get(commitStatusFile.getAbsolutePath()), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
@@ -569,7 +561,6 @@ public class LogicManager {
 
     public boolean WcChanged() {
         WorkingCopyStatus workingCopyStatus = ShowWorkingCopyStatus();
-        //build the commit object
         if(workingCopyStatus.isChanged())
             return true;
         return false;

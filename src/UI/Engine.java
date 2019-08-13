@@ -26,9 +26,6 @@ public class Engine
     private void execute(String i_Option)
     {
         switch(i_Option){
-            case "-1":
-               // m_LogicManager.TESTING_CHANGING_BRANCH(m_InputManager.IOsetActiveUser());
-
             case "1": //Change username - Finished
                 m_LogicManager.setM_ActiveUser(m_InputManager.readActiveUserName());
                 break;
