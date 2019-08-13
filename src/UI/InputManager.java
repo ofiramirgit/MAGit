@@ -1,11 +1,9 @@
 package UI;
 
 import Logic.InputValidation;
-import Logic.Objects.BlobData;
-import Logic.Objects.BranchData;
-import Logic.Objects.Commit;
-import Logic.Objects.WorkingCopyStatus;
+import Logic.Objects.*;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -176,5 +174,43 @@ public class InputManager {
 
     public void printBranchNameIsActive() {
         System.out.println("Error! Branch is Active!");
+    }
+
+    public String getInputChangeBranch(String PathOfBranchesFolder) {
+        Boolean bool = false;
+        String branchName =EmptyString;
+        System.out.println("insert branch name you want to replace: ");
+        while (!bool)
+        {
+            branchName = m_Scanner.nextLine();
+            bool = m_InputValidation.isbranchExist(branchName,PathOfBranchesFolder+ File.separator + branchName + ".txt");
+            if(!bool)
+                System.out.println("Error! branch name isn't Exist! Please try Again.");
+        }
+        return branchName;
+    }
+
+    public Boolean WcOpenChanges() {
+        Boolean bool = false;
+        String makeCommit = EmptyString;
+        System.out.println("there is open changes. Do You Want To Make a Commit? [Y/N]");
+        while(!bool) {
+            makeCommit = m_Scanner.nextLine();
+            bool = m_InputValidation.makeCommitToOpenChanges(makeCommit);
+        }
+        if(makeCommit.toLowerCase().equals("y"))
+            return true;
+        else
+            return false;
+    }
+
+    public void printBranchHistoryCommits(List<CommitData> BranchHistoryCommits) {
+        for(CommitData commit: BranchHistoryCommits)
+        {
+            System.out.println("Sha1        : " + commit.getM_SHA1());
+            System.out.println("Message     : " + commit.getM_Message());
+            System.out.println("Created Time: " + commit.getM_CreatedTime());
+            System.out.println("Created By  : " + commit.getM_CreatedBy() +System.lineSeparator());
+        }
     }
 }

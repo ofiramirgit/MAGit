@@ -2,6 +2,8 @@ package UI;
 import Logic.LogicManager;
 import java.util.Scanner;
 
+import static Logic.ConstantsEnums.EmptyString;
+
 
 public class Engine
 {
@@ -67,11 +69,19 @@ public class Engine
                 break;
 
             case "10": //Check out Head branch
-                m_LogicManager.spreadCommitToWc("master");
+                Boolean bool = false;
+                String Msg =EmptyString;
+                String BranchName = m_InputManager.getInputChangeBranch(m_LogicManager.getPathFolder("branches"));
+                if(m_LogicManager.WcChanged()) {
+                    bool = m_InputManager.WcOpenChanges();
+                    if(bool)
+                        Msg = m_InputManager.readCommitMsg();
+                }
+                m_LogicManager.CheckOutHeadBranch(BranchName,bool,Msg);
                 break;
 
             case "11": //Show current branch history
-                m_LogicManager.historyOfActiveBranch();
+                m_InputManager.printBranchHistoryCommits(m_LogicManager.historyOfActiveBranch());
                 break;
 
             case "12": //Exit

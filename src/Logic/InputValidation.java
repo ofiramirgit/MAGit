@@ -21,4 +21,18 @@ public class InputValidation
         Path RepositoryPath = Paths.get(i_ActiveRepository  + File.separator + ".magit");
         return Files.exists(RepositoryPath);
     }
+    public Boolean makeCommitToOpenChanges(String i_makeCommit)
+    {
+        i_makeCommit= i_makeCommit.toLowerCase();
+        if(i_makeCommit.equals("y") || i_makeCommit.equals("n"))
+            return true;
+        else
+            return false;
+
+    }
+
+    public Boolean isbranchExist(String branchName,String PathBranchFileString) {
+        Path PathBranchFile = Paths.get(PathBranchFileString);
+        return Files.exists(PathBranchFile);
+    }
 }
