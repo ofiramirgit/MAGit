@@ -27,10 +27,7 @@ public class WorkingCopyStatus
     }
     public Boolean IsEmpty()
     {
-        if(m_DeletedFilesList.isEmpty() && m_ChangedFilesList.isEmpty() && m_NewFilesList.isEmpty())
-            return  true;
-
-        return  false;
+        return (m_DeletedFilesList.isEmpty() && m_ChangedFilesList.isEmpty() && m_NewFilesList.isEmpty());
     }
 
 }

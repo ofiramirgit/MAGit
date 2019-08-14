@@ -18,12 +18,11 @@ public class Menu {
                         "10. Check out head branch\n" +
                         "11. Show current branch history\n" +
                         "12. Exit\n" +
-                        "13. Bonus1\n");
+                        "13. Bonus1\n" +
+                        "14. Bonus2\n");
     }
 
     public void printInfoMenu(String i_CurrentUser, String i_RepositoryLocation) {
-        System.out.println("Magit Menu      " +
-                "Current User: " + i_CurrentUser +
-                "       Current repository location: " + i_RepositoryLocation);
+        System.out.println("Magit Menu      " + "Current User: " + i_CurrentUser + "       Current repository location: " + i_RepositoryLocation);
     }
 }

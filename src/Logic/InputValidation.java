@@ -22,6 +22,10 @@ public class InputValidation
         return Files.exists(PathBranchFile);
     }
     public boolean validSha1(String i_Sha1Input) {
-        return (i_Sha1Input.length() != 40);
+        return (i_Sha1Input.length() == 40);
+    }
+
+    public Boolean validOptionXmlRepositoryExist(String i_Option) {
+        return(i_Option.equals("1") || i_Option.equals("2"));
     }
 }

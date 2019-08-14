@@ -19,6 +19,10 @@ public class LogicManager {
 
     private String m_ActiveUser;
     private String m_ActiveRepository;
+
+
+
+    private String m_ActiveRepositoryName;
     private ZipFile m_ZipFile;
     private Map<String, String> m_CurrentCommitStateMap;
     private InputValidation m_InputValidation = new InputValidation();
@@ -38,6 +42,13 @@ public class LogicManager {
         m_ActiveUser = i_ActiveUser;
     }
 
+    public void setM_ActiveRepositoryName(String m_ActiveRepositoryName) {
+        this.m_ActiveRepositoryName = m_ActiveRepositoryName;
+    }
+
+    public String getM_ActiveRepositoryName() {
+        return m_ActiveRepositoryName;
+    }
 
     /* Change username -- Start */
     /* Case 1 */
@@ -54,10 +65,12 @@ public class LogicManager {
         XmlReader xmlReader = new XmlReader(i_XmlFilePath);
 
         String[] RepositoryLocation = xmlReader.getLocation();
+        setM_ActiveRepository(RepositoryLocation[0] + File.separator + RepositoryLocation[1]);
+        setM_ActiveRepositoryName(RepositoryLocation[1]);
         if (!m_InputValidation.checkInputActiveRepository(RepositoryLocation[0] + File.separator + RepositoryLocation[1]))
             initRepository(RepositoryLocation);
         else
-            System.out.println("Repository Exist!");
+            throw new XmlException("Repository Already Exist.",RepositoryLocation[0] + File.separator + RepositoryLocation[1]);
         xmlReader.buildFromXML();
         spreadCommitToWc(xmlReader.getActiveBranch());
     }
@@ -338,7 +351,7 @@ public class LogicManager {
             e.printStackTrace();
         }
     }
-    private void deleteFolder(File file) {
+    public void deleteFolder(File file) {
         if (file.isDirectory()) {
             for (File f : file.listFiles())
                 deleteFolder(f);
@@ -399,6 +412,7 @@ public class LogicManager {
                 Files.write(rootFolderNamePath, i_RepositoryArgs[1].getBytes());
 
                 setM_ActiveRepository(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
+                setM_ActiveRepositoryName(i_RepositoryArgs[1]);
             } catch (IOException ioExceptionObj) {
             }
         }
@@ -411,6 +425,8 @@ public class LogicManager {
     public void zeroingBranch(String i_Sha1) {
         String ActiveBranch = getBranchActiveName();
         updateBranchActiveCommit(i_Sha1);
+        File rootFolder = new File(m_ActiveRepository + File.separator + getRootFolderName());
+        deleteFolder(rootFolder);
         spreadCommitToWc(ActiveBranch);
     }
     /* Case 14 */
@@ -479,7 +495,11 @@ public class LogicManager {
         }
     }
     private String getRootFolderName() {
-        return getContentOfFile(new File(getPathFolder(".magit") + File.separator + "RootFolderName.txt"));
+        Path RootFolderName = Paths.get(getPathFolder(".magit") + File.separator + "RootFolderName.txt");
+        if(Files.exists(RootFolderName))
+            return getContentOfFile(new File(getPathFolder(".magit") + File.separator + "RootFolderName.txt"));
+        else
+            return getM_ActiveRepositoryName();
     }
     private void updateBranchActiveCommit(String i_CommitSha1) {
         String activeBranchName = getBranchActiveName();

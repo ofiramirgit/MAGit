@@ -52,7 +52,7 @@ public class InputManager {
             activeRepository = m_Scanner.nextLine();
             if (!m_InputValidation.checkInputActiveRepository(activeRepository)) {
                 loop = true;
-                System.out.println("Repository Not Found");
+                System.out.println("Repository not found. please try again: ");
             }
         }
         return activeRepository;
@@ -79,9 +79,8 @@ public class InputManager {
             System.out.println("Full Path:      " + bd.getM_Name());
             System.out.println("File Type:      " + bd.getM_Type());
             System.out.println("Sha1:           " + bd.getM_Sha1());
-            System.out.println("Changed By: " + bd.getM_ChangedBy());
-            System.out.println("Changed At: " + bd.getM_Date());
-            System.out.println();
+            System.out.println("Changed By:     " + bd.getM_ChangedBy());
+            System.out.println("Changed At:     " + bd.getM_Date()+ "\n");
         }
     }
     /*case 4 - show commit details - End*/
@@ -90,52 +89,49 @@ public class InputManager {
 
     public void PrintWcStatus(WorkingCopyStatus i_WcStatus)
     {
-        System.out.println("New Files:");
-        for(String fileFullName : i_WcStatus.getM_NewFilesList())
-            System.out.println(fileFullName);
-
-        System.out.println("Modified Files:");
-        for(String fileFullName : i_WcStatus.getM_ChangedFilesList())
-            System.out.println(fileFullName);
-
-        System.out.println("Deleted Files:");
-
-        for(String fileFullName : i_WcStatus.getM_DeletedFilesList())
-            System.out.println(fileFullName);
+        if(!i_WcStatus.getM_NewFilesList().isEmpty()) {
+            System.out.println("New Files:");
+            for (String fileFullName : i_WcStatus.getM_NewFilesList())
+                System.out.println("    - " + fileFullName);
+            System.out.println(System.lineSeparator());
+        }
+        if(!i_WcStatus.getM_ChangedFilesList().isEmpty()) {
+            System.out.println("Modified Files:");
+            for (String fileFullName : i_WcStatus.getM_ChangedFilesList())
+                System.out.println("    - " + fileFullName);
+            System.out.println(System.lineSeparator());
+        }
+        if(!i_WcStatus.getM_DeletedFilesList().isEmpty()) {
+            System.out.println("Deleted Files:");
+            for (String fileFullName : i_WcStatus.getM_DeletedFilesList())
+                System.out.println("    - " + fileFullName);
+            System.out.println(System.lineSeparator());
+        }
     }
 
     /*case 5 - show commit details - End*/
 
-    /*case 6 - commit*/
-       public  void  printNoChangesNotCommited()
-       {
-           System.out.println("No changes detected, commit canceled");
-       }
-
-    /*case 6 - commit*/
 
        /*case 7 - showAllBranches - Start*/
-    public  void  PrintAllBranches(List<BranchData> i_BranchDataList) {
-
-        for(BranchData branchData : i_BranchDataList)
+    public  void  PrintAllBranches(List<BranchData> i_BranchDataList)
+    {
+        if(!i_BranchDataList.isEmpty()) {
+            for (BranchData branchData : i_BranchDataList) {
+                if (branchData.getM_IsActive())
+                    System.out.print("(Active Branch) -> ");
+                System.out.println("Branch Name:    " + branchData.getM_BranchName());
+                System.out.println("------------------------------");
+                System.out.println("Commit Sha1:    " + branchData.getM_CommitSha1());
+                System.out.println("Commit Message: " + branchData.getM_CommitMessage() + System.lineSeparator());
+            }
+        }
+        else
         {
-            System.out.println("Branch Name:    " + branchData.getM_BranchName());
-            if (branchData.getM_IsActive())
-                System.out.print(" (Active Branch");
-            System.out.println("------------------------------");
-            System.out.println("Commit Sha1:    " + branchData.getM_CommitSha1());
-            System.out.println("Commit Message: " + branchData.getM_CommitMessage());
-            System.out.println();
+            System.out.println("There is no branch that make commit." + System.lineSeparator());
         }
 
     }
 
-    /*case 7- showAllBranches - End*/
-
-    public void printActiveRepositoryNotFound()
-    {
-        System.out.println("Error! Repository Not Found.");
-    }
 
     public String readCommitMsg()
     {
@@ -159,9 +155,6 @@ public class InputManager {
         return(branchName);
     }
 
-    public void printBranchNameExist() {
-        System.out.println("Error! Branch Name Exist!");
-    }
 
     public String getInputBranchNameToDelete() {
         System.out.println("insert branch name you want to delete: ");
@@ -169,9 +162,6 @@ public class InputManager {
         return branchName;
     }
 
-    public void printBranchNameIsActive() {
-        System.out.println("Error! Branch is Active!");
-    }
 
     public String getInputChangeBranch(String PathOfBranchesFolder) {
         Boolean bool = false;
@@ -211,9 +201,6 @@ public class InputManager {
         }
     }
 
-    public void printInsertRepository() {
-        System.out.println("Invalid! you have to select repository location (3).");
-    }
 
     public String getXmlPathFile() {
         System.out.println("insert full path of XML file: ");
@@ -222,16 +209,29 @@ public class InputManager {
 
     public String getInputSha1() {
         Boolean bool =false;
-        String Sha1Input =EmptyString;
+        String Sha1Input = EmptyString;
         System.out.println("insert sha1 that you want the branch to point to (40 HEX characters): ");
         while(!bool) {
             Sha1Input = m_Scanner.nextLine();
-            if (!m_InputValidation.validSha1(Sha1Input))
-                System.out.println("Invalid Sha1. (40 Hex Characters. try again: ");
-            else
-                bool=true;
+            bool = m_InputValidation.validSha1(Sha1Input);
+            if(!bool)
+                System.out.println("Invalid Sha1. try again (40 Hex Characters): ");
         }
         return Sha1Input;
     }
 
-}
+    public void print(String i_String) {
+        System.out.println(i_String + System.lineSeparator());
+    }
+
+    public Integer getInputXmlRepositoryExist() {
+        Boolean bool =false;
+        String option = EmptyString;
+        while(!bool) {
+            option = m_Scanner.nextLine();
+            bool = m_InputValidation.validOptionXmlRepositoryExist(option);
+            if(!bool)
+                System.out.println("Invalid input. try again (1,2): ");
+        }
+        return Integer.parseInt(option);
+    }}
