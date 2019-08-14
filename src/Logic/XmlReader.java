@@ -32,10 +32,10 @@ public class XmlReader {
     public XmlReader(String i_XMLLocation) throws XmlException{
         try {
             Path XmlFilePath = Paths.get(i_XMLLocation);
+            if(i_XMLLocation.length()<4||!i_XMLLocation.substring(i_XMLLocation.length() - 4).equals(".xml"))
+                throw new XmlException("File is not xml format");
             if(!Files.exists(XmlFilePath))
-                throw new XmlException("Xml File Not Found");
-            if(!i_XMLLocation.substring(i_XMLLocation.length() - 4).equals(".xml"))
-                throw new XmlException("File is Not Xml Format");
+                throw new XmlException("Xml file not found");
             InputStream inputStream = new FileInputStream(i_XMLLocation);
             try {
                 magitRepository = deserializeFrom(inputStream);

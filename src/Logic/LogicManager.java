@@ -514,7 +514,7 @@ public class LogicManager {
     }
     public boolean WcChanged() {
         WorkingCopyStatus workingCopyStatus = ShowWorkingCopyStatus();
-        return workingCopyStatus.isChanged();
+        return workingCopyStatus.isNotChanged();
     }
 
     public String getPathFolder(String i_Folder) {

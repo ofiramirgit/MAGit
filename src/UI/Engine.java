@@ -40,15 +40,15 @@ public class Engine
                     m_InputManager.print("Load Xml File successfully.");
 
                 } catch (XmlException XmlException) {
+                    m_InputManager.print(XmlException.getMessage());
                     if (XmlException.getMessage().equals("Repository Already Exist.")) {
-                        m_InputManager.print(XmlException.getMessage());
                         m_InputManager.print("Please from the following options:" + System.lineSeparator() + "    1. Overwrite existing repository" + System.lineSeparator() + "    2. Continue with existing repository");
                         Integer option = m_InputManager.getInputXmlRepositoryExist();
                         if (option == 1) {
                             try {
                                 m_LogicManager.deleteFolder(new File(XmlException.getPath()));
                                 m_LogicManager.readXML(XmlPathFile);
-                                m_InputManager.print("Load Xml File successfully.");
+                                m_InputManager.print("Xml file loaded successfully.");
                             } catch (Logic.XmlException e) {
                                 System.out.println(XmlException.getMessage());
                             }

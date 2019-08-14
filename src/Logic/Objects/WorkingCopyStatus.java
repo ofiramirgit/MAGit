@@ -22,7 +22,7 @@ public class WorkingCopyStatus
     public List<String> getM_NewFilesList() {
         return m_NewFilesList;
     }
-    public Boolean isChanged()    {
+    public Boolean isNotChanged()    {
         return (m_ChangedFilesList.size()==0 && m_NewFilesList.size()==0 && m_DeletedFilesList.isEmpty());
     }
     public Boolean IsEmpty()

@@ -89,23 +89,29 @@ public class InputManager {
 
     public void PrintWcStatus(WorkingCopyStatus i_WcStatus)
     {
-        if(!i_WcStatus.getM_NewFilesList().isEmpty()) {
-            System.out.println("New Files:");
-            for (String fileFullName : i_WcStatus.getM_NewFilesList())
-                System.out.println("    - " + fileFullName);
-            System.out.println(System.lineSeparator());
+        if(i_WcStatus.isNotChanged()){
+            System.out.println("There is no changes." + System.lineSeparator());
+
         }
-        if(!i_WcStatus.getM_ChangedFilesList().isEmpty()) {
-            System.out.println("Modified Files:");
-            for (String fileFullName : i_WcStatus.getM_ChangedFilesList())
-                System.out.println("    - " + fileFullName);
-            System.out.println(System.lineSeparator());
-        }
-        if(!i_WcStatus.getM_DeletedFilesList().isEmpty()) {
-            System.out.println("Deleted Files:");
-            for (String fileFullName : i_WcStatus.getM_DeletedFilesList())
-                System.out.println("    - " + fileFullName);
-            System.out.println(System.lineSeparator());
+        else {
+            if (!i_WcStatus.getM_NewFilesList().isEmpty()) {
+                System.out.println("New Files:");
+                for (String fileFullName : i_WcStatus.getM_NewFilesList())
+                    System.out.println("    - " + fileFullName);
+                System.out.println();
+            }
+            if (!i_WcStatus.getM_ChangedFilesList().isEmpty()) {
+                System.out.println("Modified Files:");
+                for (String fileFullName : i_WcStatus.getM_ChangedFilesList())
+                    System.out.println("    - " + fileFullName);
+                System.out.println();
+            }
+            if (!i_WcStatus.getM_DeletedFilesList().isEmpty()) {
+                System.out.println("Deleted Files:");
+                for (String fileFullName : i_WcStatus.getM_DeletedFilesList())
+                    System.out.println("    - " + fileFullName);
+                System.out.println();
+            }
         }
     }
 
