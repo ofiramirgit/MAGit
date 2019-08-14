@@ -153,11 +153,8 @@ public class LogicManager {
     /* Create Commit -- Start */
     /* Case 6 */
 
-    public Boolean createCommit(String i_Msg, WorkingCopyStatus i_WcStatus)
+    public Boolean createCommit(String i_Msg)
     {
-        if(i_WcStatus.IsEmpty())
-            return  false;
-
         String objectFolder;
         Commit newCommit = new Commit();
         newCommit.setM_Message(i_Msg);
@@ -185,7 +182,7 @@ public class LogicManager {
         } else {
             //folderToZipInto = getPathFolder("WcCommit");
         }
-        BlobData rootBlobData = recursiveTravelFolders(objectFolder, rootFolderFile, i_WcStatus);//throw all the WC files to WcCommit folder
+        BlobData rootBlobData = recursiveTravelFolders(objectFolder, rootFolderFile);//throw all the WC files to WcCommit folder
         newCommit.setM_MainSHA1(rootBlobData.getM_Sha1());
         String commitSha1 = DigestUtils.sha1Hex(newCommit.toString());
         m_ZipFile.zipFile(objectFolder, commitSha1, newCommit.toString());
@@ -194,7 +191,7 @@ public class LogicManager {
         return true;
     }
 
-    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File, WorkingCopyStatus i_WCstatus) {
+    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File) {
         String sha1;
         BlobData newBlobData;
 
@@ -202,7 +199,7 @@ public class LogicManager {
             Folder folder = new Folder();
 
             for (final File f : i_File.listFiles())
-                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f,i_WCstatus));
+                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f));
 
             sha1 = DigestUtils.sha1Hex(folder.toString());
             BlobData directoryBlob =
@@ -215,15 +212,6 @@ public class LogicManager {
         else { //isFile
             Boolean fileChanged = false;
 
-            for (String filePath : i_WCstatus.getM_ChangedFilesList())
-                if(i_File.getAbsolutePath().equals(filePath))
-                    fileChanged = true;
-
-            for (String filePath : i_WCstatus.getM_NewFilesList())
-                if(i_File.getAbsolutePath().equals(filePath))
-                    fileChanged = true;
-
-            if(fileChanged) {
                 Blob blob = new Blob(getContentOfFile(i_File));
                 sha1 = DigestUtils.sha1Hex(blob.getM_Data());
 
@@ -239,14 +227,9 @@ public class LogicManager {
                 newBlobData = new BlobData(i_File.getName(), sha1, ConstantsEnums.FileType.FILE,
                         m_ActiveUser, dateFormat.format(new Date()));
             }
-            else
-            {
-                newBlobData = new BlobData(i_File.getName(), m_CurrentCommitStateMap.get(i_File.getAbsolutePath()),
-                        ConstantsEnums.FileType.FILE, m_ActiveUser, dateFormat.format(new Date()));
-            }
             return newBlobData;
         }
-    }
+
 
     private boolean isFirstCommit() {
         String BranchName = getBranchActiveName();
@@ -340,10 +323,10 @@ public class LogicManager {
 
     /* Check out Head branch -- Start */
     /* Case 10 */
-    public void CheckOutHeadBranch(String i_BranchName, Boolean i_toCommit,String Msg, WorkingCopyStatus i_WCstatus)
+    public void CheckOutHeadBranch(String i_BranchName, Boolean i_toCommit,String Msg)
     {
         if(i_toCommit)
-            createCommit(Msg,i_WCstatus);
+            createCommit(Msg);
 
         File rootFolder = new File(m_ActiveRepository + File.separator + getRootFolderName());
         deleteFolder(rootFolder);

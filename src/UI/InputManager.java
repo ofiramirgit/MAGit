@@ -106,7 +106,15 @@ public class InputManager {
 
     /*case 5 - show commit details - End*/
 
-    /*case 7 - showAllBranches - Start*/
+    /*case 6 - commit*/
+       public  void  printNoChangesNotCommited()
+       {
+           System.out.println("No changes detected, commit canceled");
+       }
+
+    /*case 6 - commit*/
+
+       /*case 7 - showAllBranches - Start*/
     public  void  PrintAllBranches(List<BranchData> i_BranchDataList) {
 
         for(BranchData branchData : i_BranchDataList)
@@ -226,7 +234,4 @@ public class InputManager {
         return Sha1Input;
     }
 
-    public void printNoChangesNotCommited() {
-        System.out.println("there is changes from previous commit.");
-    }
 }

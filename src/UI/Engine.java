@@ -59,7 +59,7 @@ public class Engine
 
             case "6"://Commit
                 if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
-                    if (!m_LogicManager.createCommit(m_InputManager.readCommitMsg(), m_LogicManager.ShowWorkingCopyStatus()))
+                    if (!m_LogicManager.createCommit(m_InputManager.readCommitMsg()))
                         m_InputManager.printNoChangesNotCommited();
                 }
                 else
@@ -101,7 +101,7 @@ public class Engine
                         if (bool)
                             Msg = m_InputManager.readCommitMsg();
                     }
-                    m_LogicManager.CheckOutHeadBranch(BranchName, bool, Msg, m_LogicManager.ShowWorkingCopyStatus());
+                    m_LogicManager.CheckOutHeadBranch(BranchName, bool, Msg);
                 }
                 else
                     m_InputManager.printInsertRepository();
