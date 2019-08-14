@@ -1,6 +1,6 @@
 package UI;
 import Logic.LogicManager;
-import java.util.Scanner;
+import Logic.XmlException;
 
 import static Logic.ConstantsEnums.EmptyString;
 
@@ -31,7 +31,12 @@ public class Engine
                 break;
 
             case "2"://Load from XML
-                m_LogicManager.readXML();
+                String XmlPathFile = m_InputManager.getXmlPathFile();
+                try {
+                    m_LogicManager.readXML(XmlPathFile);
+                } catch (XmlException XmlException) {
+                    System.out.println(XmlException.getMessage());
+                }
                 break;
 
             case "3"://Switch repository - Finished
@@ -53,8 +58,10 @@ public class Engine
                 break;
 
             case "6"://Commit
-                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString))
-                    m_LogicManager.createCommit(m_InputManager.readCommitMsg());
+                if(!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
+                    if (!m_LogicManager.createCommit(m_InputManager.readCommitMsg(), m_LogicManager.ShowWorkingCopyStatus()))
+                        m_InputManager.printNoChangesNotCommited();
+                }
                 else
                     m_InputManager.printInsertRepository();
                 break;
@@ -94,7 +101,7 @@ public class Engine
                         if (bool)
                             Msg = m_InputManager.readCommitMsg();
                     }
-                    m_LogicManager.CheckOutHeadBranch(BranchName, bool, Msg);
+                    m_LogicManager.CheckOutHeadBranch(BranchName, bool, Msg, m_LogicManager.ShowWorkingCopyStatus());
                 }
                 else
                     m_InputManager.printInsertRepository();
@@ -115,6 +122,17 @@ public class Engine
                 String repositoryArgs[];
                 repositoryArgs = m_InputManager.IOinitRepository();
                 m_LogicManager.initRepository(repositoryArgs);
+                break;
+            case "14": //Bonus2
+                Boolean bool = false;
+                String Sha1 = m_InputManager.getInputSha1();
+                if (m_LogicManager.WcChanged()) {
+                    bool = m_InputManager.WcOpenChanges();
+                    if (bool) {
+                        m_LogicManager.zeroingBranch(Sha1);
+                        m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
+                    }
+                }
                 break;
             default:
                 System.out.println("Invalid Input please selcet number between 1-13.");

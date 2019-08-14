@@ -27,24 +27,18 @@ public class InputManager {
     /*case 1 - change user name - Start*/
     public String readActiveUserName()
     {
-        Boolean loop = true;
+        Boolean bool = false;
         String userName = EmptyString;
         System.out.println("Please insert user name:");
-
-       while (loop)
-       {
-           loop = false;
+        while (!bool)
+        {
            userName = m_Scanner.nextLine();
-
-           if(!m_InputValidation.checkInputStringLen(userName))
-           {
-               loop = true;
+           bool = m_InputValidation.checkInputStringLen(userName);
+           if(!bool)
                System.out.println("Please insert user name up to 50 characters:");
-           }
-       }
+        }
         return userName;
     }
-
     /*case 1 - change user name - End*/
 
     /*case 3 - switch repository - Start*/
@@ -137,20 +131,15 @@ public class InputManager {
 
     public String readCommitMsg()
     {
-        Boolean loop = true;
-        System.out.println("insert commit massage: ");
+        Boolean bool = false;
         String commitMsg = EmptyString;
-
-        while (loop)
+        System.out.println("insert commit massage: ");
+        while (!bool)
         {
-            loop = false;
             commitMsg = m_Scanner.nextLine();
-
-            if(!m_InputValidation.checkInputStringLen(commitMsg))
-            {
-                loop = true;
+            bool = m_InputValidation.checkInputStringLen(commitMsg);
+            if (!bool)
                 System.out.println("Please insert message up to 50 characters:");
-            }
         }
         return commitMsg ;
     }
@@ -183,7 +172,7 @@ public class InputManager {
         while (!bool)
         {
             branchName = m_Scanner.nextLine();
-            bool = m_InputValidation.isbranchExist(branchName,PathOfBranchesFolder+ File.separator + branchName + ".txt");
+            bool = m_InputValidation.isBranchExist(branchName,PathOfBranchesFolder+ File.separator + branchName + ".txt");
             if(!bool)
                 System.out.println("Error! branch name isn't Exist! Please try Again.");
         }
@@ -216,5 +205,28 @@ public class InputManager {
 
     public void printInsertRepository() {
         System.out.println("Invalid! you have to select repository location (3).");
+    }
+
+    public String getXmlPathFile() {
+        System.out.println("insert full path of XML file: ");
+        return m_Scanner.nextLine();
+    }
+
+    public String getInputSha1() {
+        Boolean bool =false;
+        String Sha1Input =EmptyString;
+        System.out.println("insert sha1 that you want the branch to point to (40 HEX characters): ");
+        while(!bool) {
+            Sha1Input = m_Scanner.nextLine();
+            if (!m_InputValidation.validSha1(Sha1Input))
+                System.out.println("Invalid Sha1. (40 Hex Characters. try again: ");
+            else
+                bool=true;
+        }
+        return Sha1Input;
+    }
+
+    public void printNoChangesNotCommited() {
+        System.out.println("there is changes from previous commit.");
     }
 }

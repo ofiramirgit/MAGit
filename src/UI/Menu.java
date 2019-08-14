@@ -6,7 +6,7 @@ public class Menu {
 
     public void printMenu() {
         System.out.print(
-                        "1.  Change username\n" +
+                "1.  Change username\n" +
                         "2.  Load from XML\n" +
                         "3.  Switch repository\n" +
                         "4.  Show current commit file system information\n" +
@@ -18,8 +18,7 @@ public class Menu {
                         "10. Check out head branch\n" +
                         "11. Show current branch history\n" +
                         "12. Exit\n" +
-                        "13. Bonus1\n"
-        );
+                        "13. Bonus1\n");
     }
 
     public void printInfoMenu(String i_CurrentUser, String i_RepositoryLocation) {
