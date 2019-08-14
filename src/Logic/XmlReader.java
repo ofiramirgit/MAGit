@@ -51,33 +51,6 @@ public class XmlReader {
 
     }
 
-    private void xmlFileIsValid_oneId32() throws XmlException{
-        List<Byte>idNumbers = new ArrayList<>();
-        for(MagitRepository.MagitBlobs.MagitBlob blob:magitRepository.getMagitBlobs().getMagitBlob())
-        {
-            if(idNumbers.contains(blob.getId())) {
-                throw new XmlException("there is 2 blobs with the same id");
-            }
-            idNumbers.add(blob.getId());
-        }
-        idNumbers.clear();
-        for(MagitRepository.MagitFolders.MagitSingleFolder folder:magitRepository.getMagitFolders().getMagitSingleFolder())
-        {
-            if(idNumbers.contains(folder.getId())) {
-                throw new XmlException("there is 2 folders with the same id");
-            }
-            idNumbers.add(folder.getId());
-        }
-        idNumbers.clear();
-        for(MagitRepository.MagitCommits.MagitSingleCommit commit:magitRepository.getMagitCommits().getMagitSingleCommit())
-        {
-            if(idNumbers.contains(commit.getId())) {
-                throw new XmlException("there is 2 commits with the same id");
-            }
-            idNumbers.add(commit.getId());
-        }
-        idNumbers.clear();
-    }
     private MagitRepository deserializeFrom(InputStream in) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(JAXB_XML_GAME_PACKAGE_NAME);
         Unmarshaller u = jc.createUnmarshaller();
@@ -198,6 +171,35 @@ public class XmlReader {
                 CommitToFind =  commit;
         }
         return CommitToFind;
+    }
+
+    //Xml Validation 3.2
+    private void xmlFileIsValid_oneId32() throws XmlException{
+        List<Byte>idNumbers = new ArrayList<>();
+        for(MagitRepository.MagitBlobs.MagitBlob blob:magitRepository.getMagitBlobs().getMagitBlob())
+        {
+            if(idNumbers.contains(blob.getId())) {
+                throw new XmlException("there is 2 blobs with the same id");
+            }
+            idNumbers.add(blob.getId());
+        }
+        idNumbers.clear();
+        for(MagitRepository.MagitFolders.MagitSingleFolder folder:magitRepository.getMagitFolders().getMagitSingleFolder())
+        {
+            if(idNumbers.contains(folder.getId())) {
+                throw new XmlException("there is 2 folders with the same id");
+            }
+            idNumbers.add(folder.getId());
+        }
+        idNumbers.clear();
+        for(MagitRepository.MagitCommits.MagitSingleCommit commit:magitRepository.getMagitCommits().getMagitSingleCommit())
+        {
+            if(idNumbers.contains(commit.getId())) {
+                throw new XmlException("there is 2 commits with the same id");
+            }
+            idNumbers.add(commit.getId());
+        }
+        idNumbers.clear();
     }
 
     //Xml Validation 3.3
