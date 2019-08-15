@@ -121,20 +121,19 @@ public class LogicManager {
         WorkingCopyStatus wcStatus = new WorkingCopyStatus();
         String rootFolderName = getRootFolderName();
         File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
-
         m_CurrentCommitStateMap.clear();
-        String contentOfFile = getContentOfFile(commitStatusFile);
-        String[] commitStatusArr = getContentOfFile(commitStatusFile).split(System.lineSeparator());
-        for (String s : commitStatusArr) {
-            String[] strings = s.split(Separator);
-            m_CurrentCommitStateMap.put(strings[0], strings[1]);
-        }
 
+        if(!getContentOfFile(commitStatusFile).isEmpty()) {
+            String[] commitStatusArr = getContentOfFile(commitStatusFile).split(System.lineSeparator());
+            if (commitStatusArr != null) {
+                for (String s : commitStatusArr) {
+                    String[] strings = s.split(Separator);
+                    m_CurrentCommitStateMap.put(strings[0], strings[1]);
+                }
+            }
+        }
         wcStatus.setM_DeletedFilesList(m_CurrentCommitStateMap.keySet());
-
-        if (!m_CurrentCommitStateMap.isEmpty()) {
-            recursiveCompareWC(m_ActiveRepository, rootFolderName, wcStatus);
-        }
+        recursiveCompareWC(m_ActiveRepository, rootFolderName, wcStatus);
 
         return wcStatus;
     }
@@ -166,45 +165,46 @@ public class LogicManager {
     /* Create Commit -- Start */
     /* Case 6 */
 
-    public Boolean createCommit(String i_Msg)
+    public WorkingCopyStatus createCommit(String i_Msg)
     {
+        WorkingCopyStatus wcStatus = ShowWorkingCopyStatus();
         String objectFolder;
-        Commit newCommit = new Commit();
-        newCommit.setM_Message(i_Msg);
-        newCommit.setM_CreatedBy(m_ActiveUser);
-        newCommit.setM_PreviousSHA1("NONE");
-        newCommit.setM_PreviousSHA1merge("NONE");
-        newCommit.setM_CreatedTime(dateFormat.format(new Date()));
+        if(!wcStatus.IsEmpty()) {
+            Commit newCommit = new Commit();
+            newCommit.setM_Message(i_Msg);
+            newCommit.setM_CreatedBy(m_ActiveUser);
+            newCommit.setM_PreviousSHA1("NONE");
+            newCommit.setM_PreviousSHA1merge("NONE");
+            newCommit.setM_CreatedTime(dateFormat.format(new Date()));
 
-        String rootFolderName = getRootFolderName();
-        File rootFolderFile = new File(m_ActiveRepository + File.separator + rootFolderName);
-        File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
+            String rootFolderName = getRootFolderName();
+            File rootFolderFile = new File(m_ActiveRepository + File.separator + rootFolderName);
+            File commitStatusFile = new File(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
 
-        try {
-            Files.write(Paths.get(commitStatusFile.getAbsolutePath()), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
+            try {
+                Files.write(Paths.get(commitStatusFile.getAbsolutePath()), "".getBytes(), StandardOpenOption.TRUNCATE_EXISTING);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            objectFolder = getPathFolder("objects");
+
+            if (!isFirstCommit()) {
+                String PreviousSHA1 = getContentOfFile(new File(getPathFolder("branches"), getBranchActiveName() + ".txt"));
+                newCommit.setM_PreviousSHA1(PreviousSHA1);
+            }
+
+            BlobData rootBlobData = recursiveTravelFolders(objectFolder, rootFolderFile, wcStatus);//throw all the WC files to WcCommit folder
+            newCommit.setM_MainSHA1(rootBlobData.getM_Sha1());
+            String commitSha1 = DigestUtils.sha1Hex(newCommit.toString());
+            m_ZipFile.zipFile(objectFolder, commitSha1, newCommit.toString());
+            updateBranchActiveCommit(commitSha1);
         }
-
-        objectFolder = getPathFolder("objects");
-
-        if (!isFirstCommit()) {
-            String PreviousSHA1 = getContentOfFile(new File(getPathFolder("branches"), getBranchActiveName() + ".txt"));
-            newCommit.setM_PreviousSHA1(PreviousSHA1);
-        } else {
-            //folderToZipInto = getPathFolder("WcCommit");
-        }
-        BlobData rootBlobData = recursiveTravelFolders(objectFolder, rootFolderFile);//throw all the WC files to WcCommit folder
-        newCommit.setM_MainSHA1(rootBlobData.getM_Sha1());
-        String commitSha1 = DigestUtils.sha1Hex(newCommit.toString());
-        m_ZipFile.zipFile(objectFolder, commitSha1, newCommit.toString());
-        updateBranchActiveCommit(commitSha1);
-
-        return true;
+        return wcStatus;
     }
 
-    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File) {
+    public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File, WorkingCopyStatus i_WCstatus) {
         String sha1;
         BlobData newBlobData;
 
@@ -212,7 +212,7 @@ public class LogicManager {
             Folder folder = new Folder();
 
             for (final File f : i_File.listFiles())
-                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f));
+                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f,i_WCstatus));
 
             sha1 = DigestUtils.sha1Hex(folder.toString());
             BlobData directoryBlob =
@@ -223,20 +223,26 @@ public class LogicManager {
             return directoryBlob;
         }
         else { //isFile
-            Boolean fileChanged = false;
+                Boolean fileChanged = false;
 
                 Blob blob = new Blob(getContentOfFile(i_File));
                 sha1 = DigestUtils.sha1Hex(blob.getM_Data());
 
-                String toFile = i_File.getAbsolutePath() + Separator + sha1 + System.lineSeparator();
-                Path path = Paths.get(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
-                try {
-                    Files.write(path, toFile.getBytes(), StandardOpenOption.APPEND);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                fileChanged = isFileNeedCommit(i_File.getAbsolutePath(),i_WCstatus);
+
+                if(fileChanged)
+                {
+                    m_ZipFile.zipFile(i_FolderToZipInto, sha1, getContentOfFile(i_File));
                 }
 
-                m_ZipFile.zipFile(i_FolderToZipInto, sha1, getContentOfFile(i_File));
+            String toFile = i_File.getAbsolutePath() + Separator + sha1 + System.lineSeparator();
+            Path path = Paths.get(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
+            try {
+                Files.write(path, toFile.getBytes(), StandardOpenOption.APPEND);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
                 newBlobData = new BlobData(i_File.getName(), sha1, ConstantsEnums.FileType.FILE,
                         m_ActiveUser, dateFormat.format(new Date()));
             }
@@ -249,6 +255,12 @@ public class LogicManager {
         Path BranchCommit = Paths.get(getPathFolder("branches") + File.separator + BranchName + ".txt");
         return (!Files.exists(BranchCommit));
     }
+
+    private Boolean isFileNeedCommit(String i_Path, WorkingCopyStatus i_WCstatus)
+    {
+        return i_WCstatus.getM_NewFilesList().contains(i_Path) || i_WCstatus.getM_ChangedFilesList().contains(i_Path);
+    }
+
     /* Case 6 */
     /* Create Commit -- End */
 
@@ -487,6 +499,14 @@ public class LogicManager {
             try {
                 Files.createFile(pathFile);
                 Files.write(pathFile, getContentOfZipFile(getPathFolder("objects"), Sha1).getBytes());
+
+                String toFile = pathFile + Separator + Sha1 + System.lineSeparator();
+                Path pathToFile = Paths.get(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
+                try {
+                    Files.write(pathToFile, toFile.getBytes(), StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();

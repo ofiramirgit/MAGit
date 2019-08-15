@@ -78,8 +78,7 @@ public class Engine
 
             case "6"://Commit
                 if (!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
-                    if (!m_LogicManager.createCommit(m_InputManager.readCommitMsg()))
-                        m_InputManager.print("No changes detected, commit canceled");
+                    m_InputManager.PrintWcStatus(m_LogicManager.createCommit(m_InputManager.readCommitMsg()));
                 } else
                     m_InputManager.print("Invalid! you have to select repository location (3).");
                 break;

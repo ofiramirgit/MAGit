@@ -37,11 +37,21 @@ public class Folder
 
     @Override
     public String toString() {
-        return "Folder{" +
-                "LibraryFiles=" + LibraryFiles +
-                ", rootFolder=" + rootFolder +
+        return "Folder{" + getLibraryFilesToString() +
+                "rootFolder=" + rootFolder +
                 '}';
     }
+
+    private String getLibraryFilesToString()
+    {
+        String str = EmptyString;
+        for(BlobData blobData : LibraryFiles)
+        {
+            str += blobData.getM_Sha1() + ", ";
+        }
+        return  str;
+    }
+
 
 }
 
