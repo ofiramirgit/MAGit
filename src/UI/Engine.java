@@ -94,7 +94,8 @@ public class Engine
                 if (!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
                     if (!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
                         m_InputManager.print("Error! Branch Name Exist!");
-                    m_InputManager.print("Branch created successfully.");
+                    else
+                        m_InputManager.print("Branch created successfully.");
                 } else
                     m_InputManager.print("Invalid! you have to select repository location (3).");
                 break;
@@ -103,7 +104,8 @@ public class Engine
                 if (!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
                     if (!m_LogicManager.deleteBranch(m_InputManager.getInputBranchNameToDelete()))
                         m_InputManager.print("Error! Branch is Active!");
-                    m_InputManager.print("Branch deleted successfully.");
+                    else
+                        m_InputManager.print("Branch deleted successfully.");
                 } else
                     m_InputManager.print("Invalid! you have to select repository location (3).");
                 break;
@@ -113,7 +115,7 @@ public class Engine
                     Boolean bool = false;
                     String Msg = EmptyString;
                     String BranchName = m_InputManager.getInputChangeBranch(m_LogicManager.getPathFolder("branches"));
-                    if (m_LogicManager.WcChanged()) {
+                    if (!m_LogicManager.WcNotChanged()) {
                         bool = m_InputManager.WcOpenChanges();
                         if (bool)
                             Msg = m_InputManager.readCommitMsg();
@@ -145,17 +147,24 @@ public class Engine
                 Boolean bool;
                 if (!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
                     String Sha1 = m_InputManager.getInputSha1();
-//                if (m_LogicManager.WcChanged()) {
-//                    bool = m_InputManager.WcOpenChanges();
-//                    if (bool) {
-                    m_LogicManager.zeroingBranch(Sha1);
-                    m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
-//                    }
-//                }
+                    if (!m_LogicManager.WcNotChanged()) {
+                        bool = m_InputManager.Bonus2();
+                        if (bool) {
+                            m_LogicManager.zeroingBranch(Sha1);
+                            m_InputManager.print("Zeroing branch successfully.");
+                            m_InputManager.printAllBlobDataDetails(m_LogicManager.showLastCommit());
+                        }
+                        else
+                            m_InputManager.print("You selected to stay with existing Sha-1.");
+                    } else {
+                        m_LogicManager.zeroingBranch(Sha1);
+                        m_InputManager.print("Zeroing branch successfully.");
+                    }
                 }
                 else
                     m_InputManager.print("Invalid! you have to select repository location (3).");
-                break;            default:
+                break;
+                default:
                 System.out.println("Invalid Input please selcet number between 1-13.");
                 break;
         }

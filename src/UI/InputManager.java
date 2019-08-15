@@ -74,14 +74,17 @@ public class InputManager {
 
     public void printAllBlobDataDetails(List<BlobData> i_BlobDataArr)
     {
-        for(BlobData bd : i_BlobDataArr)
-        {
-            System.out.println("Full Path:      " + bd.getM_Name());
-            System.out.println("File Type:      " + bd.getM_Type());
-            System.out.println("Sha1:           " + bd.getM_Sha1());
-            System.out.println("Changed By:     " + bd.getM_ChangedBy());
-            System.out.println("Changed At:     " + bd.getM_Date()+ "\n");
+        if(!i_BlobDataArr.isEmpty()){
+            for (BlobData bd : i_BlobDataArr) {
+                System.out.println("Full Path:      " + bd.getM_Name());
+                System.out.println("File Type:      " + bd.getM_Type());
+                System.out.println("Sha1:           " + bd.getM_Sha1());
+                System.out.println("Changed By:     " + bd.getM_ChangedBy());
+                System.out.println("Changed At:     " + bd.getM_Date() + "\n");
+            }
         }
+        else
+            print("There is no branch that make commit." + System.lineSeparator());
     }
     /*case 4 - show commit details - End*/
 
@@ -132,10 +135,7 @@ public class InputManager {
             }
         }
         else
-        {
-            System.out.println("There is no branch that make commit." + System.lineSeparator());
-        }
-
+            print("There is no branch that make commit." + System.lineSeparator());
     }
 
 
@@ -176,7 +176,7 @@ public class InputManager {
         while (!bool)
         {
             branchName = m_Scanner.nextLine();
-            bool = m_InputValidation.isBranchExist(branchName,PathOfBranchesFolder+ File.separator + branchName + ".txt");
+            bool = m_InputValidation.isBranchExist(PathOfBranchesFolder+ File.separator + "NAMES.txt",branchName);
             if(!bool)
                 System.out.println("Error! branch name isn't Exist! Please try Again.");
         }
@@ -186,18 +186,28 @@ public class InputManager {
     public Boolean WcOpenChanges() {
         Boolean bool = false;
         String makeCommit = EmptyString;
-        System.out.println("there is open changes. Do You Want To Make a Commit? [Y/N]");
         while(!bool) {
+            System.out.println("there is open changes. Do You Want To Make a Commit? [Y/N]");
             makeCommit = m_Scanner.nextLine();
-            bool = m_InputValidation.makeCommitToOpenChanges(makeCommit);
+            bool = m_InputValidation.inputYesNo(makeCommit);
         }
-        if(makeCommit.toLowerCase().equals("y"))
-            return true;
-        else
-            return false;
+        return(makeCommit.toLowerCase().equals("y"));
+    }
+
+    public Boolean Bonus2(){
+        Boolean bool = false;
+        String makeCommit = EmptyString;
+        while(!bool) {
+            System.out.println("there is open changes. Do you want to change the Sha-1 anyway? [Y/N]");
+            makeCommit = m_Scanner.nextLine();
+            bool = m_InputValidation.inputYesNo(makeCommit);
+        }
+        return (makeCommit.toLowerCase().equals("y"));
     }
 
     public void printBranchHistoryCommits(List<CommitData> BranchHistoryCommits) {
+        if(BranchHistoryCommits.isEmpty())
+            System.out.println("there is no commits to show for this branch");
         for(CommitData commit: BranchHistoryCommits)
         {
             System.out.println("Sha1        : " + commit.getM_SHA1());

@@ -48,7 +48,6 @@ public class XmlReader {
         }catch(FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     private MagitRepository deserializeFrom(InputStream in) throws JAXBException {

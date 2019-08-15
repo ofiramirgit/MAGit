@@ -26,8 +26,10 @@ public class Folder
     }
     public String printArray() {
         String ArrayString=EmptyString;
-        for(BlobData blob : LibraryFiles)
-            ArrayString += blob.toString() + " ~ ";
+        for(BlobData blob : LibraryFiles) {
+            if (blob != null)
+                ArrayString += blob.toString() + " ~ ";
+        }
         ArrayString = ArrayString.substring(0, ArrayString.length() - 3);
         return ArrayString;
     }
@@ -46,9 +48,7 @@ public class Folder
     {
         String str = EmptyString;
         for(BlobData blobData : LibraryFiles)
-        {
             str += blobData.getM_Sha1() + ", ";
-        }
         return  str;
     }
 

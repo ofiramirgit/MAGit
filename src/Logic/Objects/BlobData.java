@@ -54,9 +54,9 @@ public class BlobData {
     @Override
     public String toString()
     {
-        String str = m_Name + Separator + m_Sha1 + Separator
-                    + m_Type.toString() + Separator +
-                    m_ChangedBy + Separator + m_Date ;
+        String str =m_Name +Separator+ m_Sha1 + Separator
+                    + m_Type.toString() + Separator + m_ChangedBy +
+                Separator + m_Date;
         return str;
     }
 

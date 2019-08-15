@@ -91,13 +91,14 @@ public class LogicManager {
     public List<BlobData> showLastCommit() {
         List<BlobData> blobDataArr = new ArrayList<>();
         String activeBranchName = getBranchActiveName();
-        String commitName = getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
-        Commit lastCommit = new Commit(getContentOfZipFile(getPathFolder("objects"), commitName));
+        if(!getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt")).equals(EmptyString)){
+            String commitName = getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
+            Commit lastCommit = new Commit(getContentOfZipFile(getPathFolder("objects"), commitName));
+            blobDataArr.add(new BlobData(m_ActiveRepository, lastCommit.getM_MainSHA1(), FileType.FOLDER,
+                    lastCommit.getM_CreatedBy(), lastCommit.getM_CreatedTime()));
 
-        blobDataArr.add(new BlobData(m_ActiveRepository, lastCommit.getM_MainSHA1(), FileType.FOLDER,
-                lastCommit.getM_CreatedBy(), lastCommit.getM_CreatedTime()));
-
-        showRecursiveLastCommit(blobDataArr, lastCommit.getM_MainSHA1(),  getM_ActiveRepository() + File.separator + getRootFolderName());
+            showRecursiveLastCommit(blobDataArr, lastCommit.getM_MainSHA1(),  getM_ActiveRepository() + File.separator + getRootFolderName());
+        }
 
         return blobDataArr;
     }
@@ -207,19 +208,18 @@ public class LogicManager {
     public BlobData recursiveTravelFolders(String i_FolderToZipInto ,File i_File, WorkingCopyStatus i_WCstatus) {
         String sha1;
         BlobData newBlobData;
-
         if (i_File.isDirectory()) {
             Folder folder = new Folder();
-
             for (final File f : i_File.listFiles())
-                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto,f,i_WCstatus));
+                folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto, f, i_WCstatus));
 
             sha1 = DigestUtils.sha1Hex(folder.toString());
             BlobData directoryBlob =
                     new BlobData(i_File.getName(), sha1, ConstantsEnums.FileType.FOLDER,
                             m_ActiveUser, dateFormat.format(new Date())
                     );
-            m_ZipFile.zipFile(i_FolderToZipInto,sha1, folder.printArray());
+            m_ZipFile.zipFile(i_FolderToZipInto, sha1, folder.printArray());
+
             return directoryBlob;
         }
         else { //isFile
@@ -252,8 +252,7 @@ public class LogicManager {
 
     private boolean isFirstCommit() {
         String BranchName = getBranchActiveName();
-        Path BranchCommit = Paths.get(getPathFolder("branches") + File.separator + BranchName + ".txt");
-        return (!Files.exists(BranchCommit));
+        return (getContentOfFile(new File (getPathFolder("branches") + File.separator + BranchName + ".txt")).equals(EmptyString));
     }
 
     private Boolean isFileNeedCommit(String i_Path, WorkingCopyStatus i_WCstatus)
@@ -274,7 +273,7 @@ public class LogicManager {
         for (String branchName : branchesNamesArray) {
             Path branchPath = Paths.get(getPathFolder("branches") + File.separator + branchName + ".txt");
 
-            if (Files.exists(branchPath)) {
+            if (!getContentOfFile(new File(getPathFolder("branches"), branchName + ".txt")).equals(EmptyString)) {
                 String commitSha1 = getContentOfFile(new File(getPathFolder("branches"), branchName + ".txt"));
                 Commit commit = new Commit(getContentOfZipFile(getPathFolder("objects"), commitSha1));
 
@@ -296,18 +295,20 @@ public class LogicManager {
         String branchesNames = getContentOfFile(branchesNamesFile);
         String[] names = branchesNames.split(System.lineSeparator());
         for (String name : names) {
-            if (name.equals(i_BranchName)) {
+            if (name.equals(i_BranchName))
                 branchNameNotExist = false;
-            }
+
         }
         if (branchNameNotExist) {
+            String Sha1CurrentBranch = EmptyString;
             Path path = Paths.get(stringPath);
             Path BranchPath = Paths.get(getPathFolder("branches") + File.separator + i_BranchName + ".txt");
-            String Sha1CurrentBranch = getContentOfFile(new File(getPathFolder("branches") + File.separator + getBranchActiveName() + ".txt"));
+            Sha1CurrentBranch = getContentOfFile(new File(getPathFolder("branches") + File.separator + getBranchActiveName() + ".txt"));
             try {
-                Files.write(path, (System.lineSeparator() + i_BranchName).getBytes(), StandardOpenOption.APPEND);
                 Files.createFile(BranchPath);
                 Files.write(BranchPath, Sha1CurrentBranch.getBytes());
+                Files.write(path, (System.lineSeparator() + i_BranchName).getBytes(), StandardOpenOption.APPEND);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -379,9 +380,11 @@ public class LogicManager {
     /* Case 11 */
     public List<CommitData> historyOfActiveBranch() {
         String activeBranchName = getBranchActiveName();
-        String activeBranchContent = getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
         List<CommitData> listOfCommits = new ArrayList<>();
-        recursiveShowHistoryOfCommits(activeBranchContent, listOfCommits);
+        if(!getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt")).equals(EmptyString)) {
+            String activeBranchContent = getContentOfFile(new File(getPathFolder("branches") + File.separator + activeBranchName + ".txt"));
+            recursiveShowHistoryOfCommits(activeBranchContent, listOfCommits);
+        }
         return listOfCommits;
     }
     private void recursiveShowHistoryOfCommits(String i_CommitSha1, List<CommitData> listOfCommits) {
@@ -405,7 +408,7 @@ public class LogicManager {
         Path branchesNamesPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "branches" + File.separator + "NAMES.txt");
         Path rootFolderNamePath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "RootFolderName.txt");
         Path commitStatusPath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "CommitStatus.txt");
-
+        Path materFilePath = Paths.get(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1] + File.separator + ".magit" + File.separator + "branches" +File.separator +"mater.txt");
         Boolean dirExists = Files.exists(ObjectPath);
         if (dirExists) {
             System.out.println("Directory Alerady Exists");
@@ -419,8 +422,10 @@ public class LogicManager {
                 Files.createFile(branchesNamesPath);
                 Files.createFile(rootFolderNamePath);
                 Files.createFile(commitStatusPath);
+                Files.createFile(materFilePath);
                 Files.write(activeBranchePath, "master".getBytes());
                 Files.write(branchesNamesPath, "master".getBytes());
+                Files.write(materFilePath, EmptyString.getBytes());
                 Files.write(rootFolderNamePath, i_RepositoryArgs[1].getBytes());
 
                 setM_ActiveRepository(i_RepositoryArgs[0] + File.separator + i_RepositoryArgs[1]);
@@ -457,7 +462,9 @@ public class LogicManager {
         Path path = Paths.get(i_File.getAbsolutePath());
 
         try {
-            fileContent = new String(Files.readAllBytes(path));
+            fileContent=EmptyString;
+            if(path.toFile().length()>0)
+                fileContent = new String(Files.readAllBytes(path));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -477,7 +484,7 @@ public class LogicManager {
     private void spreadCommitToWc(String i_BranchName) {
         File BranchFile = new File(getPathFolder("branches") + File.separator + i_BranchName + ".txt");
 
-        if (BranchFile.exists()) {
+        if (!getContentOfFile(BranchFile).equals(EmptyString)) {
             String sha1OfLastCommitBranch = getContentOfFile(BranchFile);
             Commit commit = new Commit(getContentOfZipFile(getPathFolder("objects"), sha1OfLastCommitBranch));
             String RootFolderSha1 = commit.getM_MainSHA1();
@@ -532,7 +539,7 @@ public class LogicManager {
 
         }
     }
-    public boolean WcChanged() {
+    public boolean WcNotChanged() {
         WorkingCopyStatus workingCopyStatus = ShowWorkingCopyStatus();
         return workingCopyStatus.isNotChanged();
     }
