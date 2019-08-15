@@ -92,10 +92,22 @@ public class Engine
 
             case "8"://Create new branch
                 if (!m_LogicManager.getM_ActiveRepository().equals(EmptyString)) {
-                    if (!m_LogicManager.createNewBranch(m_InputManager.getInputNewBranchName()))
+                    String BranchName= m_InputManager.getInputNewBranchName();
+                    if (!m_LogicManager.createNewBranch(BranchName))
                         m_InputManager.print("Error! Branch Name Exist!");
-                    else
+                    else {
                         m_InputManager.print("Branch created successfully.");
+                        Boolean bool = m_InputManager.getInputSwitchBranch();
+                        if(bool)
+                        {
+                            if(m_LogicManager.WcNotChanged()) {
+                                m_LogicManager.CheckOutHeadBranch(BranchName, false, EmptyString);
+                                m_InputManager.print("Head branch checked out successfully.");
+                            }
+                            else
+                                m_InputManager.print("There is open changes. check out branch failed.");
+                        }
+                    }
                 } else
                     m_InputManager.print("Invalid! you have to select repository location (3).");
                 break;

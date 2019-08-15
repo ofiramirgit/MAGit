@@ -14,7 +14,7 @@ public class Menu {
                         "6.  Commit\n" +
                         "7.  List available branches\n" +
                         "8.  Create new branch\n" +
-                        "9.  Check out branch\n" +
+                        "9.  Delete branch\n" +
                         "10. Check out head branch\n" +
                         "11. Show current branch history\n" +
                         "12. Exit\n" +

@@ -30,7 +30,8 @@ public class Folder
             if (blob != null)
                 ArrayString += blob.toString() + " ~ ";
         }
-        ArrayString = ArrayString.substring(0, ArrayString.length() - 3);
+        if(ArrayString.length()>=3)
+            ArrayString = ArrayString.substring(0, ArrayString.length() - 3);
         return ArrayString;
     }
     public void AddNewItem(BlobData blobData) {

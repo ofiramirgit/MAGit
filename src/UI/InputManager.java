@@ -250,4 +250,16 @@ public class InputManager {
                 System.out.println("Invalid input. try again (1,2): ");
         }
         return Integer.parseInt(option);
-    }}
+    }
+
+    public Boolean getInputSwitchBranch() {
+        Boolean bool = false;
+        String checkOutBranch = EmptyString;
+        while(!bool) {
+            System.out.println("Do you want to check out active branch and load this branch? [Y/N]");
+            checkOutBranch = m_Scanner.nextLine();
+            bool = m_InputValidation.inputYesNo(checkOutBranch);
+        }
+        return(checkOutBranch.toLowerCase().equals("y"));
+    }
+}
