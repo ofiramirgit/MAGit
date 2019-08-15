@@ -212,13 +212,11 @@ public class LogicManager {
             Folder folder = new Folder();
             for (final File f : i_File.listFiles())
                 folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto, f, i_WCstatus));
-
-            sha1 = DigestUtils.sha1Hex(folder.toString());
-            BlobData directoryBlob =
+                sha1 = DigestUtils.sha1Hex(folder.toString());
+                BlobData directoryBlob =
                     new BlobData(i_File.getName(), sha1, ConstantsEnums.FileType.FOLDER,
                             m_ActiveUser, dateFormat.format(new Date())
                     );
-            m_ZipFile.zipFile(i_FolderToZipInto, sha1, folder.printArray());
 
             return directoryBlob;
         }
@@ -541,7 +539,7 @@ public class LogicManager {
     }
     public boolean WcNotChanged() {
         WorkingCopyStatus workingCopyStatus = ShowWorkingCopyStatus();
-        return workingCopyStatus.isNotChanged();
+        return workingCopyStatus.IsEmpty();
     }
 
     public String getPathFolder(String i_Folder) {
