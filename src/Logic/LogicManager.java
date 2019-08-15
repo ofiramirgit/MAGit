@@ -213,7 +213,13 @@ public class LogicManager {
                 for (final File f : i_File.listFiles())
                 {
                     if(!(f.isDirectory() && f.listFiles().length == 0))
-                    folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto, f, i_WCstatus));
+                    {
+                        folder.AddNewItem(recursiveTravelFolders(i_FolderToZipInto, f, i_WCstatus));
+                    }
+                    else
+                    {
+                        deleteFolder(f);
+                    }
                 }
 
                 sha1 = DigestUtils.sha1Hex(folder.toString());
@@ -510,7 +516,7 @@ public class LogicManager {
                 Files.createFile(pathFile);
                 Files.write(pathFile, getContentOfZipFile(getPathFolder("objects"), Sha1).getBytes());
 
-                String toFile = pathFile + Separator + Sha1 + System.lineSeparator();
+                String toFile = pathFile.toFile().getAbsolutePath() + Separator + Sha1 + System.lineSeparator();
                 Path pathToFile = Paths.get(getPathFolder(".magit") + File.separator + "CommitStatus.txt");
                 try {
                     Files.write(pathToFile, toFile.getBytes(), StandardOpenOption.APPEND);
